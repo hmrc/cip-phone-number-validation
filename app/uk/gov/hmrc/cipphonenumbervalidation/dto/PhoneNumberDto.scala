@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cipphonenumbervalidation.controllers
+package uk.gov.hmrc.cipphonenumbervalidation.dto
 
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads.{maxLength, minLength}
+import play.api.libs.json._
 
-@Singleton()
-class MicroserviceHelloWorldController @Inject()(cc: ControllerComponents)
-    extends BackendController(cc) {
+case class PhoneNumberDto(phoneNumber: String)
 
-  def hello(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok("Hello world"))
-  }
+object PhoneNumberDto {
+
+  val phoneNumberReads = (JsPath \ "phoneNumber").read[String](minLength[String](6).keepAnd(maxLength[String](20)))
+
+  implicit val phoneNumberWrites: Writes[PhoneNumberDto] = Json.writes[PhoneNumberDto]
 }
