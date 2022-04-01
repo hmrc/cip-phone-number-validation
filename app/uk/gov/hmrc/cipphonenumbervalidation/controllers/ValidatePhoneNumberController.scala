@@ -16,17 +16,25 @@
 
 package uk.gov.hmrc.cipphonenumbervalidation.controllers
 
-import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents, Result}
+import org.slf4j.LoggerFactory
+import play.api.mvc._
+import uk.gov.hmrc.cipphonenumbervalidation.service.PhoneNumberValidationService
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton()
-class ValidatePhoneNumberController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+class ValidatePhoneNumberController @Inject()(val controllerComponents: ControllerComponents, phoneNumberValidationService: PhoneNumberValidationService) extends BaseController {
+
+  private val logger = LoggerFactory.getLogger(getClass)
+
+  val invalidPhoneNumber: String = "Enter a valid phone number"
 
   def validatePhoneNumber(phoneNumber: String): Action[AnyContent] = Action { implicit request =>
-    // TODO - USE LOGBACK AND ADD SERVICE
-    println("validating phone number=" + phoneNumber)
-    val r: Result = Ok("validating phone number repsonse")
+    logger.debug("validating phone number=" + phoneNumber)
+    var r: Result = BadRequest(invalidPhoneNumber)
+    if (phoneNumberValidationService.validatePhoneNumber(phoneNumber)) {
+      r = Ok("")
+    }
     r
   }
 

@@ -16,6 +16,65 @@
 
 package uk.gov.hmrc.cipphonenumbervalidation.service
 
+import org.slf4j.LoggerFactory
+
+import javax.inject.Singleton
+
+@Singleton()
 class PhoneNumberValidationService {
+
+  private val logger = LoggerFactory.getLogger(getClass)
+  private val notAllowedChars = Array("(", ")", "-", " ")
+
+  def validatePhoneNumber(phoneNumber: String): Boolean = {
+
+    logger.debug("Phone number is being validated=" + phoneNumber)
+    if(phoneNumber.isEmpty || phoneNumber.isBlank) {
+      logger.debug("Validation Error: Phone number does not exist")
+      return false
+    }
+
+    val phoneNumberWithNoBannedCharacters = removeNotAllowedCharsFromPhoneNumber(phoneNumber)
+    logger.debug("Validation Error: Phone number with not allowed character removed=" + phoneNumberWithNoBannedCharacters)
+
+    if(!isValidLength(phoneNumberWithNoBannedCharacters)) {
+      logger.debug("Validation Error: Phone number has invalid length")
+      return false
+    }
+
+    if(!isAllDigits(phoneNumber)) {
+      logger.debug("Validation Error: Phone number has a non-digit character")
+      return false
+    }
+/*
+
+    if(!GoogleLibraryWrapper.isPhonenumberValidByGoogleLibrary(phoneNumberWithNoBannedCharacters)) {
+      logger.debug("Validation Error: Phone number is not valid from Google library")
+      return false
+    }
+*/
+
+    logger.debug("Phone number " + phoneNumberWithNoBannedCharacters +" is valid")
+    true
+  }
+
+  private def isValidLength(input: String): Boolean = {
+    var isValid = false
+    if(input.length >= 7 || input.length <= 20) {
+      isValid = true
+    }
+    isValid
+  }
+
+  private def isAllDigits(input: String): Boolean = {
+    input.forall(_.isDigit)
+  }
+
+  private def removeNotAllowedCharsFromPhoneNumber(input: String): String = {
+    notAllowedChars.foreach { case (element) =>
+      input.replaceAll(element, "")
+    }
+    input
+  }
 
 }
