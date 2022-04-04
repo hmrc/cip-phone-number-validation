@@ -19,12 +19,22 @@ package uk.gov.hmrc.cipphonenumbervalidation.service
 import org.slf4j.LoggerFactory
 
 import javax.inject.Singleton
+import scala.util.matching.Regex
 
 @Singleton()
 class PhoneNumberValidationService {
 
   private val logger = LoggerFactory.getLogger(getClass)
-  private val notAllowedChars = Array("(", ")", "-", " ")
+
+  val regexOpenBracket = new Regex("[(]")
+  val regexCloseBracket = new Regex("[)]")
+  val regexDash = new Regex("[-]")
+  val regexBlankSpace = new Regex("[ ]")
+  private val notAllowedCharsMap: Map[String, Regex] = Map(
+    ("(", regexOpenBracket),
+    (")", regexCloseBracket),
+    ("-", regexDash),
+    ("blank", regexBlankSpace))
 
   def validatePhoneNumber(phoneNumber: String): Boolean = {
 
@@ -71,10 +81,11 @@ class PhoneNumberValidationService {
   }
 
   private def removeNotAllowedCharsFromPhoneNumber(input: String): String = {
-    notAllowedChars.foreach { case (element) =>
-      input.replaceAll(element, "")
+    var badRemoved: String = ""
+    notAllowedCharsMap.foreach { case (element) =>
+      badRemoved = element._2.replaceAllIn(input, "")
     }
-    input
+    badRemoved
   }
 
 }
