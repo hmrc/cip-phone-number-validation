@@ -17,6 +17,7 @@
 package uk.gov.hmrc.cipphonenumbervalidation.service
 
 import org.slf4j.LoggerFactory
+import uk.gov.hmrc.cipphonenumbervalidation.validation.{PhoneNumberData, PhoneNumberFormValidator, PhoneNumberValidation}
 
 import javax.inject.Singleton
 import scala.util.matching.Regex
@@ -28,7 +29,7 @@ class PhoneNumberValidationService {
 
   val regexOpenBracket = new Regex("[(]")
   val regexCloseBracket = new Regex("[)]")
-  val regexDash = new Regex("[-]")
+  val regexDash = new Regex("[^-]")
   val regexBlankSpace = new Regex("[ ]")
   private val notAllowedCharsMap: Map[String, Regex] = Map(
     ("(", regexOpenBracket),
@@ -37,51 +38,20 @@ class PhoneNumberValidationService {
     ("blank", regexBlankSpace))
 
   def validatePhoneNumber(phoneNumber: String): Boolean = {
-
     logger.debug("Phone number is being validated=" + phoneNumber)
-    if(phoneNumber.isEmpty || phoneNumber.isBlank) {
-      logger.debug("Validation Error: Phone number does not exist")
-      return false
-    }
-
     val phoneNumberWithNoBannedCharacters = removeNotAllowedCharsFromPhoneNumber(phoneNumber)
-    logger.debug("Validation Error: Phone number with not allowed character removed=" + phoneNumberWithNoBannedCharacters)
-
-    if(!isValidLength(phoneNumberWithNoBannedCharacters)) {
-      logger.debug("Validation Error: Phone number has invalid length")
-      return false
+    val validationResult: Either[PhoneNumberValidation, PhoneNumberData] = PhoneNumberFormValidator.validateForm(phoneNumber = phoneNumberWithNoBannedCharacters)
+    logger.debug("validationResult=" + validationResult)
+    if(validationResult.isLeft) {
+      false
+    } else {
+      true
     }
-
-    if(!isAllDigits(phoneNumber)) {
-      logger.debug("Validation Error: Phone number has a non-digit character")
-      return false
-    }
-/*
-
-    if(!GoogleLibraryWrapper.isPhonenumberValidByGoogleLibrary(phoneNumberWithNoBannedCharacters)) {
-      logger.debug("Validation Error: Phone number is not valid from Google library")
-      return false
-    }
-*/
-
-    logger.debug("Phone number " + phoneNumberWithNoBannedCharacters +" is valid")
-    true
-  }
-
-  private def isValidLength(input: String): Boolean = {
-    var isValid = false
-    if(input.length >= 7 || input.length <= 20) {
-      isValid = true
-    }
-    isValid
-  }
-
-  private def isAllDigits(input: String): Boolean = {
-    input.forall(_.isDigit)
   }
 
   private def removeNotAllowedCharsFromPhoneNumber(input: String): String = {
     var badRemoved: String = ""
+    notAllowedCharsMap.foreach(x => println("key=" + x._1 + ", value=" + x._2))
     notAllowedCharsMap.foreach { case (element) =>
       badRemoved = element._2.replaceAllIn(input, "")
     }

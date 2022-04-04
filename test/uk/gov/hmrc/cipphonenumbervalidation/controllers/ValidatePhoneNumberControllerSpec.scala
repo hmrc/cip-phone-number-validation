@@ -19,6 +19,7 @@ package uk.gov.hmrc.cipphonenumbervalidation.controllers
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.when
 import play.api.http.Status
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{ControllerComponents, Result}
 import play.api.test.{FakeRequest, StubControllerComponentsFactory}
 import uk.gov.hmrc.cipphonenumbervalidation.service.PhoneNumberValidationService
@@ -29,7 +30,7 @@ import scala.concurrent.Future
 
 class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComponentsFactory {
 
-  "GET on /customer-insight-platform/phone-number/validate-details/:phoneNumber" should {
+  "POST on /customer-insight-platform/phone-number/validate-details/:phoneNumber" should {
     "return a 200 (Ok) http response" in new Setup {
       when(mockPhoneNumberValidationService.validatePhoneNumber(anyString())) thenReturn true
 
@@ -37,7 +38,7 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
       status(expected) shouldBe Status.OK
     }
 
-    "GET on /customer-insight-platform/phone-number/validate-details/:phoneNumber" should {
+    "POST on /customer-insight-platform/phone-number/validate-details/:phoneNumber" should {
       "return a 400 (Bad Request) http response" in new Setup {
         when(mockPhoneNumberValidationService.validatePhoneNumber(anyString())) thenReturn false
         val expected: Future[Result] = validatePhoneNumberController.validatePhoneNumber(phoneNumber)(getValidatePhoneNumberRequest)
@@ -50,12 +51,17 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
 
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
+    val phoneNumberJson: JsValue = Json.parse("""
+  {
+    "phoneNumber" : "01292123456"
+  }
+  """)
     val invalidPhoneNumberErrorMsg = "Enter a valid phone number"
     val phoneNumber = "441292123456"
     val mockPhoneNumberValidationService: PhoneNumberValidationService = mock[PhoneNumberValidationService]
     val mockControllerComponents: ControllerComponents = stubControllerComponents()
     val validatePhoneNumberController = new ValidatePhoneNumberController(mockControllerComponents, mockPhoneNumberValidationService)
-    val getValidatePhoneNumberRequest = FakeRequest("GET", "/customer-insight-platform/phone-number/validate-details/:phoneNumber")
+    val getValidatePhoneNumberRequest = FakeRequest("POST", "/customer-insight-platform/phone-number/validate-details/:phoneNumber").withJsonBody(phoneNumberJson)
 
   }
 

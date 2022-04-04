@@ -17,8 +17,11 @@
 package uk.gov.hmrc.cipphonenumbervalidation.controllers
 
 import org.slf4j.LoggerFactory
+import play.api.data.Form
+import play.api.data.Forms.{single, text}
 import play.api.mvc._
 import uk.gov.hmrc.cipphonenumbervalidation.service.PhoneNumberValidationService
+import uk.gov.hmrc.cipphonenumbervalidation.validation.{PhoneNumberData, PhoneNumberValidation}
 
 import javax.inject.{Inject, Singleton}
 
@@ -29,9 +32,19 @@ class ValidatePhoneNumberController @Inject()(val controllerComponents: Controll
 
   val invalidPhoneNumber: String = "Enter a valid phone number"
 
+  val form = Form(single("phoneNumber" -> text(minLength=6, maxLength=20)))
+
   def validatePhoneNumber(phoneNumber: String): Action[AnyContent] = Action { implicit request =>
     logger.debug("validating phone number=" + phoneNumber)
     var r: Result = BadRequest(invalidPhoneNumber)
+    val formData = form.bindFromRequest()
+
+    if(formData.hasErrors) {
+      r = BadRequest(invalidPhoneNumber)
+    }
+
+    val input = formData.data.get("phoneNumber").get
+    println("input=" + input)
     if (phoneNumberValidationService.validatePhoneNumber(phoneNumber)) {
       r = Ok("")
     }
