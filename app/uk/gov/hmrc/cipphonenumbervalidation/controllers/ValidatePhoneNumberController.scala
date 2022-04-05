@@ -35,20 +35,20 @@ class ValidatePhoneNumberController @Inject()(val controllerComponents: Controll
 
   def validatePhoneNumber(): Action[AnyContent] = Action { implicit request =>
     logger.debug("validating phone number")
-    var r: Result = BadRequest(invalidPhoneNumber)
-    val formData = form.bindFromRequest()
 
-    if(formData.hasErrors) {
-      r = BadRequest(invalidPhoneNumber)
-    }
+    form.bindFromRequest.fold(
+      formWithErrors => {
+        // binding failure, you retrieve the form containing errors:
+        BadRequest(invalidPhoneNumber)
+      },
+      formData => {
+        /* binding success, you get the actual value. */
+        val enteredPhoneNumber = "01292-123456"
+        val isValid = phoneNumberValidationService.validatePhoneNumber(enteredPhoneNumber)
+        Ok("")
+      }
+    )
 
-    val input: Option[String] = formData.data.get("phoneNumber")
-    val enteredPhoneNumber = input.get
-    println("enteredPhoneNumber=" + enteredPhoneNumber)
-    if (phoneNumberValidationService.validatePhoneNumber(enteredPhoneNumber)) {
-      r = Ok("")
-    }
-    r
   }
 
 }

@@ -50,6 +50,7 @@ class PhoneNumberValidationService {
   }
 
   private def removeNotAllowedCharsFromPhoneNumber(input: String): String = {
+    //val result = input.replace(, "")
     var badRemoved: String = ""
     notAllowedCharsMap.foreach(x => println("key=" + x._1 + ", value=" + x._2))
     notAllowedCharsMap.foreach { case (element) =>
