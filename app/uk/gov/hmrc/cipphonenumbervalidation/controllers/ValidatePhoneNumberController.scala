@@ -18,9 +18,10 @@ package uk.gov.hmrc.cipphonenumbervalidation.controllers
 
 import org.slf4j.LoggerFactory
 import play.api.data.Form
-import play.api.data.Forms.{single, text}
+import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.mvc._
 import uk.gov.hmrc.cipphonenumbervalidation.service.PhoneNumberValidationService
+import uk.gov.hmrc.cipphonenumbervalidation.validation.PhoneNumberData
 
 import javax.inject.{Inject, Singleton}
 
@@ -31,24 +32,30 @@ class ValidatePhoneNumberController @Inject()(val controllerComponents: Controll
 
   val invalidPhoneNumber: String = "Enter a valid phone number"
 
-  val form = Form(single("phoneNumber" -> text(minLength=6, maxLength=20)))
+  val phoneForm = Form(
+    mapping(
+      "phoneNumber" -> nonEmptyText(minLength = 6, maxLength = 20)
+    )(PhoneNumberData.apply)(PhoneNumberData.unapply)
+  )
 
   def validatePhoneNumber(): Action[AnyContent] = Action { implicit request =>
     logger.debug("validating phone number")
-
-    form.bindFromRequest.fold(
+    phoneForm.bindFromRequest.fold(
       formWithErrors => {
         // binding failure, you retrieve the form containing errors:
         BadRequest(invalidPhoneNumber)
       },
       formData => {
         /* binding success, you get the actual value. */
-        val enteredPhoneNumber = "01292-123456"
-        val isValid = phoneNumberValidationService.validatePhoneNumber(enteredPhoneNumber)
-        Ok("")
+        val enteredPhoneNumber = formData.phoneNumber
+        logger.debug("entered Phone number is " + enteredPhoneNumber)
+        if (phoneNumberValidationService.validatePhoneNumber(enteredPhoneNumber)) {
+          Ok("")
+        } else {
+          BadRequest(invalidPhoneNumber)
+        }
       }
     )
-
   }
 
 }
