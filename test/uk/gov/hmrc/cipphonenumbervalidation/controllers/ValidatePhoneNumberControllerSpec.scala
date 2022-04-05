@@ -34,15 +34,16 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
     "return a 200 (Ok) http response" in new Setup {
       when(mockPhoneNumberValidationService.validatePhoneNumber(anyString())) thenReturn true
 
-      val expected: Future[Result] = validatePhoneNumberController.validatePhoneNumber(phoneNumber)(getValidatePhoneNumberRequest)
-      status(expected) shouldBe Status.OK
+      val actual: Future[Result] = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequest)
+      status(actual) shouldBe Status.OK
     }
 
     "POST on /customer-insight-platform/phone-number/validate-details/:phoneNumber" should {
       "return a 400 (Bad Request) http response" in new Setup {
         when(mockPhoneNumberValidationService.validatePhoneNumber(anyString())) thenReturn false
-        val expected: Future[Result] = validatePhoneNumberController.validatePhoneNumber(phoneNumber)(getValidatePhoneNumberRequest)
-        status(expected) shouldBe Status.BAD_REQUEST
+        val actual: Future[Result] = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequest)
+        status(actual) shouldBe Status.BAD_REQUEST
+        //body(actual) shouldBe "Enter a valid phone number"
       }
     }
   }
@@ -61,7 +62,7 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
     val mockPhoneNumberValidationService: PhoneNumberValidationService = mock[PhoneNumberValidationService]
     val mockControllerComponents: ControllerComponents = stubControllerComponents()
     val validatePhoneNumberController = new ValidatePhoneNumberController(mockControllerComponents, mockPhoneNumberValidationService)
-    val getValidatePhoneNumberRequest = FakeRequest("POST", "/customer-insight-platform/phone-number/validate-details/:phoneNumber").withJsonBody(phoneNumberJson)
+    val getValidatePhoneNumberRequest = FakeRequest("POST", "/customer-insight-platform/phone-number/validate-details").withJsonBody(phoneNumberJson)
 
   }
 

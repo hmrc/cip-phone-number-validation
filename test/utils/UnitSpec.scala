@@ -35,4 +35,8 @@ trait UnitSpec extends AnyWordSpec with Matchers with MockitoSugar with ScalaFut
 
   def status(of: Future[Result])(implicit timeout: Duration): Int = status(Await.result(of, timeout))
 
+  def body(of: Result):  String = of.body.toString
+
+  def body(of: Future[Result])(implicit timeout: Duration):  String = body(Await.result(of, timeout))
+
 }
