@@ -42,9 +42,10 @@ class ValidatePhoneNumberController @Inject()(val controllerComponents: Controll
       r = BadRequest(invalidPhoneNumber)
     }
 
-    val input = formData.data.get("phoneNumber").get
-    println("input=" + input)
-    if (phoneNumberValidationService.validatePhoneNumber(input)) {
+    val input: Option[String] = formData.data.get("phoneNumber")
+    val enteredPhoneNumber = input.get
+    println("enteredPhoneNumber=" + enteredPhoneNumber)
+    if (phoneNumberValidationService.validatePhoneNumber(enteredPhoneNumber)) {
       r = Ok("")
     }
     r

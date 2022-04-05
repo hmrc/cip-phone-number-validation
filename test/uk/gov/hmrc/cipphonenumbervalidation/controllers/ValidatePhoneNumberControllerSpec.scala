@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComponentsFactory {
 
-  "POST on /customer-insight-platform/phone-number/validate-details/:phoneNumber" should {
+  "POST on /customer-insight-platform/phone-number/validate-details" should {
     "return a 200 (Ok) http response" in new Setup {
       when(mockPhoneNumberValidationService.validatePhoneNumber(anyString())) thenReturn true
 
@@ -38,7 +38,7 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
       status(actual) shouldBe Status.OK
     }
 
-    "POST on /customer-insight-platform/phone-number/validate-details/:phoneNumber" should {
+    "POST on /customer-insight-platform/phone-number/validate-details" should {
       "return a 400 (Bad Request) http response" in new Setup {
         when(mockPhoneNumberValidationService.validatePhoneNumber(anyString())) thenReturn false
         val actual: Future[Result] = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequest)
