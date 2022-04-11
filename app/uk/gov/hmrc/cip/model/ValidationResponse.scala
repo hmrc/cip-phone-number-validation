@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cipphonenumbervalidation.config
+package uk.gov.hmrc.cip.model
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
+import play.api.libs.json.{Json, Reads, Writes}
 
-@Singleton
-class AppConfig @Inject()(config: Configuration) {
+case class ValidationResponse(message: String)
 
-  val appName: String = config.get[String]("appName")
+object ValidationResponse {
+  implicit val reads: Reads[ValidationResponse] = Json.reads[ValidationResponse]
+  implicit val writes: Writes[ValidationResponse] = Json.writes[ValidationResponse]
 }
+

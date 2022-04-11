@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cipphonenumbervalidation.service
+package uk.gov.hmrc.cip.service
 
 import org.slf4j.LoggerFactory
-import uk.gov.hmrc.cipphonenumbervalidation.validation.{PhoneNumberData, PhoneNumberFormValidator, PhoneNumberValidation}
+import uk.gov.hmrc.cip.model.ValidationResponse
+import uk.gov.hmrc.cip.validation.{PhoneNumberData, PhoneNumberFormValidator, PhoneNumberValidation}
 
 import javax.inject.Singleton
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.matching.Regex
 
 @Singleton()
@@ -37,16 +40,20 @@ class PhoneNumberValidationService {
     ("-", regexDash),
     ("blank", regexBlankSpace))
 
-  def validatePhoneNumber(phoneNumber: String): Boolean = {
-    logger.debug("Phone number is being validated=" + phoneNumber)
-    val phoneNumberWithNoBannedCharacters = removeNotAllowedCharsFromPhoneNumber(phoneNumber)
-    val validationResult: Either[PhoneNumberValidation, PhoneNumberData] = PhoneNumberFormValidator.validateForm(phoneNumber = phoneNumberWithNoBannedCharacters)
-    logger.debug("validationResult=" + validationResult)
-    if(validationResult.isLeft) {
-      false
-    } else {
-      true
-    }
+  def validatePhoneNumber(phoneNumber: String): String = {
+
+//    logger.debug("Phone number is being validated=" + phoneNumber)
+//    val phoneNumberWithNoBannedCharacters = removeNotAllowedCharsFromPhoneNumber(phoneNumber)
+//    val validationResult: Either[PhoneNumberValidation, PhoneNumberData] = PhoneNumberFormValidator.validateForm(phoneNumber = phoneNumberWithNoBannedCharacters)
+//    logger.debug("validationResult=" + validationResult)
+//    if(validationResult.isLeft) {
+//      "Valid"
+//    } else {
+//      "Invalid"
+//    }
+//
+    "Valid"
+
   }
 
   private def removeNotAllowedCharsFromPhoneNumber(input: String): String = {
@@ -60,3 +67,4 @@ class PhoneNumberValidationService {
   }
 
 }
+

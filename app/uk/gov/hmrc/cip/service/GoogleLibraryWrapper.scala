@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cipphonenumbervalidation.validation
+package uk.gov.hmrc.cip.service
 
-final case class PhoneNumberData(phoneNumber: String)
+import org.slf4j.LoggerFactory
+
+class GoogleLibraryWrapper {
+
+  private val logger = LoggerFactory.getLogger(getClass)
+
+  def isPhoneNumberValidByGoogleLibrary(input: String): Boolean = {
+   true
+  }
+
+}

@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cipphonenumbervalidation.validation
+package uk.gov.hmrc.cip.validation
 
-sealed trait PhoneNumberValidation {
-  def errorMessage: String
-}
-
-case object PhoneNumberIsInvalid extends PhoneNumberValidation {
-  def errorMessage: String = "Enter a valid phone number"
-}
-
+final case class PhoneNumberData(phoneNumber: String)

@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cipphonenumbervalidation.validation
+package uk.gov.hmrc.cip.validation
 
-sealed trait PhoneNumberFormValidator {
-
-  def validatePhoneNumber(phoneNumber: String): Either[PhoneNumberValidation, String] =
-    Either.cond(
-      phoneNumber.matches("^[0-9]+$"),
-      phoneNumber,
-      PhoneNumberIsInvalid
-    )
-
-  def validateForm(phoneNumber: String): Either[PhoneNumberValidation, PhoneNumberData] = {
-
-    for {
-      validatePhoneNumber <- validatePhoneNumber(phoneNumber)
-    } yield PhoneNumberData(validatePhoneNumber)
-  }
-
+sealed trait PhoneNumberValidation {
+  def errorMessage: String
 }
 
-object PhoneNumberFormValidator extends PhoneNumberFormValidator
+case object PhoneNumberIsInvalid extends PhoneNumberValidation {
+  def errorMessage: String = "Enter a valid phone number"
+}
+

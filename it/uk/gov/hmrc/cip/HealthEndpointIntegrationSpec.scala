@@ -1,4 +1,4 @@
-package uk.gov.hmrc.cipphonenumbervalidation
+package uk.gov.hmrc.cip
 
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
