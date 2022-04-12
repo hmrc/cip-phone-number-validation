@@ -38,21 +38,7 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
 
   private val logger = LoggerFactory.getLogger(getClass)
 
-  def  validatePhoneNumber1 = Action { implicit request =>
-    val jsonBody: Option[JsValue] = request.body.asJson
-    jsonBody
-      .map { json =>
-        val phoneNumber = (json \ "phoneNumber").as[String]
-        service.validatePhoneNumber(phoneNumber) match {
-          case "Valid" => Ok
-          case _ => BadRequest
-        }
-        }.getOrElse {
-          BadRequest(messagesApi("error.invalid")(langs.availables.head))
-        }
-      }
-
-  def validatePhoneNumber2: Action[String] = Action.async(parse.tolerantText) {
+  def validatePhoneNumber: Action[String] = Action.async(parse.tolerantText) {
     request =>
       val maybeJson = Try(Json.parse(request.body))
       maybeJson match {

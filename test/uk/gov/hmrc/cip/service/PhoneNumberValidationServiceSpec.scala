@@ -37,7 +37,7 @@ class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen
       val actual = phoneNumberValidationService.validatePhoneNumber(phoneNumber)
 
       Then("the phone number should be valid")
-      assert(actual)
+      assert(actual == "Valid")
     }
 
     Scenario("Phone number contains a non-digit character") {
@@ -49,7 +49,7 @@ class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen
       val actual = phoneNumberValidationService.validatePhoneNumber(phoneNumber)
 
       Then("the phone number should be invalid")
-      assert(!actual)
+      assert(actual != "Valid")
     }
 
     // TODO - FIX REGEX ISSUEß

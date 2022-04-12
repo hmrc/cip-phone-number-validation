@@ -17,12 +17,8 @@
 package uk.gov.hmrc.cip.service
 
 import org.slf4j.LoggerFactory
-import uk.gov.hmrc.cip.model.ValidationResponse
-import uk.gov.hmrc.cip.validation.{PhoneNumberData, PhoneNumberFormValidator, PhoneNumberValidation}
 
 import javax.inject.Singleton
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.util.matching.Regex
 
 @Singleton()
