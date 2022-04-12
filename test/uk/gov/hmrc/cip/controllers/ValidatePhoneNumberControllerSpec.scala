@@ -18,23 +18,20 @@ package uk.gov.hmrc.cip.controllers
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import akka.util.{ByteString}
+import akka.util.ByteString
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.Mockito.{verify, when}
 import play.api.http.{HeaderNames, Status}
 import play.api.i18n.{Langs, MessagesApi}
-import play.api.libs.json.{JsValue, Json}
-import play.api.libs.streams.Accumulator
-import play.api.mvc.{ControllerComponents, Result}
+import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.mvc.{ControllerComponents}
 import play.api.test.{FakeRequest, StubControllerComponentsFactory}
 import uk.gov.hmrc.cip.config.AppConfig
 import uk.gov.hmrc.cip.service.PhoneNumberValidationService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UnitSpec
-
-import scala.concurrent.Future
 
 class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComponentsFactory {
 
@@ -42,11 +39,10 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
     "return a 200 (Ok) http response when phone number is valid" in new Setup {
       when(mockPhoneNumberValidationService.validatePhoneNumber(anyString())) thenReturn "Valid"
 
-      val actual: Accumulator[ByteString, Result] = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequest)
+      val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequest)
 
-      val accumulatorResult: Future[Result] = actual.run()
-      status(accumulatorResult) shouldBe Status.OK
-      body(accumulatorResult) shouldBe empty
+      status(actual) shouldBe Status.OK
+      body(actual) shouldBe empty
       verify(mockPhoneNumberValidationService).validatePhoneNumber(ArgumentMatchers.eq("01292123456"))
     }
 
@@ -55,16 +51,14 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
         "when phone number passes simple validation and does not pass complex validation" in new Setup {
         when(mockPhoneNumberValidationService.validatePhoneNumber(anyString())) thenReturn "something else"
 
-        val actual: Accumulator[ByteString, Result] = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequest)
+        val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequest)
 
-        val accumulatorResult: Future[Result] = actual.run()
-
-        status(accumulatorResult) shouldBe Status.BAD_REQUEST
-        //body(accumulatorResult) shouldBe invalidPhoneNumberErrorMsg
+        status(actual) shouldBe Status.BAD_REQUEST
+        body(actual) shouldBe invalidPhoneNumberErrorMsg
         verify(mockPhoneNumberValidationService).validatePhoneNumber(ArgumentMatchers.eq("01292123456"))
       }
     }
-
+/*
     "POST on /customer-insight-platform/phone-number/validate-details" should {
       "return a 400 (Bad Request) http response when phone number is blank" in new Setup {
         val phoneNumberJsonInvalidBlank: JsValue = Json.parse("""
@@ -74,12 +68,10 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
         """)
         val getValidatePhoneNumberRequestInvalidBlank = FakeRequest("POST", "/customer-insight-platform/phone-number/validate-details").withJsonBody(phoneNumberJsonInvalidBlank)
 
-        val actual: Accumulator[ByteString, Result] = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequestInvalidBlank)
+        val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequestInvalidBlank)
 
-        val accumulatorResult: Future[Result] = actual.run()
-
-        status(accumulatorResult) shouldBe Status.BAD_REQUEST
-        //body(accumulatorResult) shouldBe invalidPhoneNumberErrorMsg
+        status(actual) shouldBe Status.BAD_REQUEST
+        body(actual) shouldBe invalidPhoneNumberErrorMsg
         verifyNoInteractions(mockPhoneNumberValidationService)
       }
     }
@@ -93,11 +85,10 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
         """)
         val getValidatePhoneNumberRequestInvalidMinLength = FakeRequest("POST", "/customer-insight-platform/phone-number/validate-details").withJsonBody(phoneNumberJsonInvalidMinLength)
 
-        val actual: Accumulator[ByteString, Result] = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequestInvalidMinLength)
+        val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequestInvalidMinLength)
 
-        val accumulatorResult: Future[Result] = actual.run()
-        status(accumulatorResult) shouldBe Status.BAD_REQUEST
-        //body(accumulatorResult) shouldBe invalidPhoneNumberErrorMsg
+        status(actual) shouldBe Status.BAD_REQUEST
+        body(actual) shouldBe invalidPhoneNumberErrorMsg
         verifyNoInteractions(mockPhoneNumberValidationService)
       }
     }
@@ -119,7 +110,7 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
         verifyNoInteractions(mockPhoneNumberValidationService)
       }
     }
-
+*/
   }
 
   private trait Setup {
@@ -128,12 +119,19 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
     implicit val sys = ActorSystem("MyTest")
     implicit val mat = ActorMaterializer()
 
-    val phoneNumberJson: JsValue = Json.parse(
+    //val jsonString = """{"phoneNumber": "01292123456"}"""
+    //val phoneNumberJsonValue : JsValue = Json.parse(jsonString)
+    //val phoneNumberJson: JsObject = phoneNumberJsonValue
+
+    val phoneNumberJson: JsObject = Json.obj("phoneNumber"-> "01292123456")
+
+
+/*    val phoneNumberJson: JsValue = Json.parse(
       """
         |{
         |   "phoneNumber" : "01292123456"
         |}""".stripMargin
-    )
+    )*/
   /*  val phoneNumberString: String =
       """
         |{
@@ -150,7 +148,8 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
     val validatePhoneNumberController = new ValidatePhoneNumberController(
       mockControllerComponents
       , mockLangs,mockMessagesApi,mockAppConfig,mockPhoneNumberValidationService)
-    val getValidatePhoneNumberRequest = FakeRequest("POST", "/customer-insight-platform/phone-number/validate-details").withHeaders(HeaderNames.CONTENT_TYPE -> "application/json").withJsonBody(phoneNumberJson)
+    val getValidatePhoneNumberRequest = FakeRequest("POST", "/customer-insight-platform/phone-number/validate-details").withHeaders(HeaderNames.CONTENT_TYPE -> "application/json").withBody[JsValue](phoneNumberJson)
+   // val getValidatePhoneNumberRequest = FakeRequest("POST", "/customer-insight-platform/phone-number/validate-details").withHeaders(HeaderNames.CONTENT_TYPE -> "application/json").withJsonBody(phoneNumberJson)
 
    // val getValidatePhoneNumberRequest = FakeRequest("POST", "/customer-insight-platform/phone-number/validate-details").withHeaders(HeaderNames.CONTENT_TYPE -> "text/plain").withTextBody(phoneNumberString)
   }
