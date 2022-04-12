@@ -22,6 +22,7 @@ import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc.{AbstractController, Action, BaseController, ControllerComponents}
 import uk.gov.hmrc.cip.config.AppConfig
 import uk.gov.hmrc.cip.model.PhoneNumberData
+import uk.gov.hmrc.cip.model.PhoneNumberData.phoneNumberReads
 import uk.gov.hmrc.cip.service.PhoneNumberValidationService
 
 import javax.inject.{Inject, Singleton}
@@ -38,24 +39,20 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
 
   private val logger = LoggerFactory.getLogger(getClass)
 
-/*
-  def validatePhoneNumber2 = Action { request =>
-    val json = request.body.asJson.get
-    val phoneData = json.as[PhoneNumberData]
-    println(phoneData)
-    Ok
-  }
-*/
-
   def validatePhoneNumber: Action[String] = Action.async(parse.tolerantText) {
-    logger.debug("Validating phone number")
     request =>
       val maybeJson = Try(Json.parse(request.body))
       maybeJson match {
-        case Success(json)      => json.validate[PhoneNumberData] match {
-          case JsSuccess(phoneNumber, _) =>
-            service.validatePhoneNumber(phoneNumber.phoneNumber)
-            Future.successful(Ok)
+        case Success(json)      => json.validate[String](phoneNumberReads) match {
+          case s: JsSuccess[String] => {
+            println("thePhoneNumberToValidate="+ s.get)
+            val result = service.validatePhoneNumber(s.get)
+            if (result == "Valid") {
+              Future.successful(Ok)
+            } else {
+              Future.successful(BadRequest("""{"obj":[{"msg":["error.payload.missing"],"args":[]}]}"""))
+            }
+          }
           case JsError(errors) =>
             Future.successful(BadRequest(JsError.toJson(errors)))
         }
@@ -63,4 +60,28 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
       }
   }
 
+
+  /* def validatePhoneNumber: Action[String] = Action.async(parse.tolerantText) {
+     request =>
+       val maybeJson = Try(Json.parse(request.body))
+       maybeJson match {
+         case Success(json)      => json.validate[PhoneNumberData] match {
+           case JsSuccess(phoneNumberData, _) => {
+             val _: PhoneNumberData = phoneNumberData
+             val thePhoneNumberToValidate: String = phoneNumberData.phoneNumber
+             println("thePhoneNumberToValidate="+ thePhoneNumberToValidate)
+             val result = service.validatePhoneNumber(thePhoneNumberToValidate)
+             if (result == "Valid") {
+               Future.successful(Ok)
+             } else {
+               Future.successful(BadRequest("""{"obj":[{"msg":["error.payload.missing"],"args":[]}]}"""))
+             }
+           }
+           case JsError(errors) =>
+             Future.successful(BadRequest(JsError.toJson(errors)))
+         }
+         case Failure(exception) => Future.successful(BadRequest("""{"obj":[{"msg":["error.payload.missing"],"args":[]}]}"""))
+       }
+   }
+ */
 }
