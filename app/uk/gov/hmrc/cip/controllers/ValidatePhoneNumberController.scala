@@ -38,7 +38,17 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
 
   private val logger = LoggerFactory.getLogger(getClass)
 
+/*
+  def validatePhoneNumber2 = Action { request =>
+    val json = request.body.asJson.get
+    val phoneData = json.as[PhoneNumberData]
+    println(phoneData)
+    Ok
+  }
+*/
+
   def validatePhoneNumber: Action[String] = Action.async(parse.tolerantText) {
+    logger.debug("Validating phone number")
     request =>
       val maybeJson = Try(Json.parse(request.body))
       maybeJson match {

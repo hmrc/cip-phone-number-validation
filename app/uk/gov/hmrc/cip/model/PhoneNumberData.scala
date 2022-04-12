@@ -16,14 +16,29 @@
 
 package uk.gov.hmrc.cip.model
 
-import play.api.libs.json.{JsPath, Reads}
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
 case class PhoneNumberData(phoneNumber: String)
 
 object PhoneNumberData {
-  implicit val reads: Reads[PhoneNumberData] = Json.reads[PhoneNumberData]
-  implicit val writes: Writes[PhoneNumberData] = Json.writes[PhoneNumberData]
-}
 
+  implicit object PhoneNumberDataFormat extends Format[PhoneNumberData] {
+
+    // convert from JSON string to a PhoneNumberData object (de-serializing from JSON)
+    def reads(json: JsValue): JsResult[PhoneNumberData] = {
+      val phoneNumber = (json \ "phoneNumber").as[String]
+      JsSuccess(PhoneNumberData(phoneNumber))
+    }
+
+    // convert from PhoneNumberData object to JSON (serializing to JSON)
+    def writes(p: PhoneNumberData): JsValue = {
+      // JsObject requires Seq[(String, play.api.libs.json.JsValue)]
+      val data = Seq("phoneNumber" -> JsString(p.phoneNumber))
+      JsObject(data)
+    }
+
+  }
+
+
+
+}
