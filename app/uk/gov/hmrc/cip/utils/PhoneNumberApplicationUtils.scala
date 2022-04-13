@@ -18,7 +18,7 @@ package uk.gov.hmrc.cip.utils
 
 import scala.util.matching.Regex
 
-class PhoneNumberUtils {
+class PhoneNumberApplicationUtils {
 
   val regexOpenBracket = new Regex("[(]")
   val regexCloseBracket = new Regex("[)]")

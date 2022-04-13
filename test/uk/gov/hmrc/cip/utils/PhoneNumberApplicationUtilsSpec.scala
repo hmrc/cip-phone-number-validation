@@ -19,13 +19,13 @@ package uk.gov.hmrc.cip.utils
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 
-class PhoneNumberUtilsSpec extends AnyFeatureSpec with GivenWhenThen {
+class PhoneNumberApplicationUtilsSpec extends AnyFeatureSpec with GivenWhenThen {
 
   info("As a HMRC service")
   info("I want to ensure phone numbers entered by citizens have non allowed characters removed")
   info("So I can validate my phone number using external libraries")
 
-  val phoneNumberUtils = new PhoneNumberUtils()
+  val phoneNumberApplicationUtils = new PhoneNumberApplicationUtils()
 
   val phoneNumber = "01292123456"
 
@@ -37,7 +37,7 @@ class PhoneNumberUtilsSpec extends AnyFeatureSpec with GivenWhenThen {
       val phoneNumberWithOpenBracket = "(01292123456"
 
       When("the phone number has not allowed characters removed")
-      val actual = phoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithOpenBracket)
+      val actual = phoneNumberApplicationUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithOpenBracket)
 
       Then("the phone number should not contain the (")
       assert(actual == phoneNumber)
@@ -49,7 +49,7 @@ class PhoneNumberUtilsSpec extends AnyFeatureSpec with GivenWhenThen {
       val phoneNumberWithClosedBracket = "01292)123456"
 
       When("the phone number has not allowed characters removed")
-      val actual = phoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithClosedBracket)
+      val actual = phoneNumberApplicationUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithClosedBracket)
 
       Then("the phone number should not contain the )")
       assert(actual == phoneNumber)
@@ -61,7 +61,7 @@ class PhoneNumberUtilsSpec extends AnyFeatureSpec with GivenWhenThen {
       val phoneNumberWithClosedBracket = "01292-123456"
 
       When("the phone number has not allowed characters removed")
-      val actual = phoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithClosedBracket)
+      val actual = phoneNumberApplicationUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithClosedBracket)
 
       Then("the phone number should not contain the -")
       assert(actual == phoneNumber)
@@ -73,7 +73,7 @@ class PhoneNumberUtilsSpec extends AnyFeatureSpec with GivenWhenThen {
       val phoneNumberWithClosedBracket = "01292 123456"
 
       When("the phone number has not allowed characters removed")
-      val actual = phoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithClosedBracket)
+      val actual = phoneNumberApplicationUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithClosedBracket)
 
       Then("the phone number should not contain the blank space")
       assert(actual == phoneNumber)
@@ -85,7 +85,7 @@ class PhoneNumberUtilsSpec extends AnyFeatureSpec with GivenWhenThen {
       val phoneNumberWithClosedBracket = " 01292123456"
 
       When("the phone number has not allowed characters removed")
-      val actual = phoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithClosedBracket)
+      val actual = phoneNumberApplicationUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithClosedBracket)
 
       Then("the phone number should not contain the blank space")
       assert(actual == phoneNumber)
@@ -97,7 +97,7 @@ class PhoneNumberUtilsSpec extends AnyFeatureSpec with GivenWhenThen {
       val phoneNumberWithClosedBracket = "01292123456 "
 
       When("the phone number has not allowed characters removed")
-      val actual = phoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithClosedBracket)
+      val actual = phoneNumberApplicationUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumberWithClosedBracket)
 
       Then("the phone number should not contain the blank space")
       assert(actual == phoneNumber)

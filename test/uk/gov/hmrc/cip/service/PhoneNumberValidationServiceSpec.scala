@@ -21,7 +21,7 @@ import org.mockito.Mockito.when
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
-import uk.gov.hmrc.cip.utils.PhoneNumberUtils
+import uk.gov.hmrc.cip.utils.PhoneNumberApplicationUtils
 
 class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen {
 
@@ -29,9 +29,9 @@ class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen
   info("I want to ensure phone numbers entered by citizens are valid")
   info("So I can check the validity of the details entered")
 
-  val mockGoogleLibraryWrapper = mock[GoogleLibraryWrapper]
-  val mockPhoneNumberUtils = mock[PhoneNumberUtils]
-  val phoneNumberValidationService = new PhoneNumberValidationService(mockGoogleLibraryWrapper,  mockPhoneNumberUtils)
+  val mockGooglePhoneNumberLibraryService = mock[GooglePhoneNumberLibraryService]
+  val mockPhoneNumberUtils = mock[PhoneNumberApplicationUtils]
+  val phoneNumberValidationService = new PhoneNumberValidationService(mockGooglePhoneNumberLibraryService,  mockPhoneNumberUtils)
 
   val phoneNumber = "01292123456"
   when(mockPhoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(anyString())).thenReturn(phoneNumber)
@@ -40,7 +40,7 @@ class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen
     Scenario("Phone number is valid from Google Library") {
 
       Given("a phone number is valid from Google Library")
-      when(mockGoogleLibraryWrapper.isPhoneNumberValidByGoogleLibrary(anyString())).thenReturn(true)
+      when(mockGooglePhoneNumberLibraryService.isValidPhoneNumber(anyString())).thenReturn(true)
 
       When("the phone number is validated")
       val actual = phoneNumberValidationService.validatePhoneNumber(phoneNumber)
@@ -52,7 +52,7 @@ class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen
     Scenario("Phone number is not valid from Google Library") {
 
       Given("a phone number is not valid from Google Library")
-      when(mockGoogleLibraryWrapper.isPhoneNumberValidByGoogleLibrary(anyString())).thenReturn(false)
+      when(mockGooglePhoneNumberLibraryService.isValidPhoneNumber(anyString())).thenReturn(false)
 
       When("the phone number is validated")
       val actual = phoneNumberValidationService.validatePhoneNumber(phoneNumber)

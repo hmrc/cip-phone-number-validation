@@ -45,11 +45,12 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
           if (result == VALID) {
             Future.successful(Ok)
           } else {
+            logger.warn("Invalid phone number")
             Future.successful(BadRequest(cc.messagesApi("error.invalid")(cc.langs.availables.head)))
           }
         }
         case e: JsError => {
-          println("Errors: " + JsError.toJson(e).toString())}
+          logger.warn("Errors: " + JsError.toJson(e).toString())}
           Future.successful(BadRequest(cc.messagesApi("error.invalid")(cc.langs.availables.head)))
       }
   }
