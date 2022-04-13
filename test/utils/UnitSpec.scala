@@ -21,6 +21,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Result
+import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -35,8 +36,6 @@ trait UnitSpec extends AnyWordSpec with Matchers with MockitoSugar with ScalaFut
 
   def status(of: Future[Result])(implicit timeout: Duration): Int = status(Await.result(of, timeout))
 
-  def body(of: Result):  String = of.body.toString
-
-  def body(of: Future[Result])(implicit timeout: Duration):  String = body(Await.result(of, timeout))
+  def body(of: Future[Result])(implicit timeout: Duration):  String = contentAsString(of)
 
 }
