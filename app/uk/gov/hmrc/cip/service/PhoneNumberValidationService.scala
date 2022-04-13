@@ -17,49 +17,29 @@
 package uk.gov.hmrc.cip.service
 
 import org.slf4j.LoggerFactory
+import uk.gov.hmrc.cipphonenumbervalidation.constants.ApplicationConstants.{INVALID, VALID}
+import uk.gov.hmrc.cipphonenumbervalidation.utils.PhoneNumberUtils
 
-import javax.inject.Singleton
-import scala.util.matching.Regex
+import javax.inject.{Inject, Singleton}
 
 @Singleton()
-class PhoneNumberValidationService {
+class PhoneNumberValidationService @Inject()(googleLibPhoneNumber: GoogleLibraryWrapper, phoneNumberUtils: PhoneNumberUtils) {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
-  val regexOpenBracket = new Regex("[(]")
-  val regexCloseBracket = new Regex("[)]")
-  val regexDash = new Regex("[^-]")
-  val regexBlankSpace = new Regex("[ ]")
-  private val notAllowedCharsMap: Map[String, Regex] = Map(
-    ("(", regexOpenBracket),
-    (")", regexCloseBracket),
-    ("-", regexDash),
-    ("blank", regexBlankSpace))
-
   def validatePhoneNumber(phoneNumber: String): String = {
 
-//    logger.debug("Phone number is being validated=" + phoneNumber)
-//    val phoneNumberWithNoBannedCharacters = removeNotAllowedCharsFromPhoneNumber(phoneNumber)
-//    val validationResult: Either[PhoneNumberValidation, PhoneNumberData] = PhoneNumberFormValidator.validateForm(phoneNumber = phoneNumberWithNoBannedCharacters)
-//    logger.debug("validationResult=" + validationResult)
-//    if(validationResult.isLeft) {
-//      "Valid"
-//    } else {
-//      "Invalid"
-//    }
-//
-    "Valid"
+    logger.debug("Phone number is being validated=" + phoneNumber)
+    val phoneNumberWithNoBannedCharacters = phoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumber)
 
-  }
+    val resultFromGoogleLibrary = googleLibPhoneNumber.isPhoneNumberValidByGoogleLibrary(phoneNumberWithNoBannedCharacters)
 
-  private def removeNotAllowedCharsFromPhoneNumber(input: String): String = {
-    //val result = input.replace(, "")
-    var badRemoved: String = ""
-    notAllowedCharsMap.foreach(x => println("key=" + x._1 + ", value=" + x._2))
-    notAllowedCharsMap.foreach { case (element) =>
-      badRemoved = element._2.replaceAllIn(input, "")
+    if(resultFromGoogleLibrary) {
+      VALID
+    } else {
+      INVALID
     }
-    badRemoved
+
   }
 
 }

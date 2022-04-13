@@ -23,6 +23,7 @@ import play.api.mvc.{AbstractController, Action, ControllerComponents}
 import uk.gov.hmrc.cip.config.AppConfig
 import uk.gov.hmrc.cip.model.PhoneNumberData.phoneNumberReads
 import uk.gov.hmrc.cip.service.PhoneNumberValidationService
+import uk.gov.hmrc.cipphonenumbervalidation.constants.ApplicationConstants.VALID
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
@@ -44,7 +45,7 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
         case s: JsSuccess[String] => {
           println("phone number: " + s.get)
           val result = service.validatePhoneNumber(s.get)
-          if (result == "Valid") {
+          if (result == VALID) {
             Future.successful(Ok)
           } else {
             Future.successful(BadRequest("""{"obj":[{"msg":["error.payload.missing"],"args":[]}]}"""))

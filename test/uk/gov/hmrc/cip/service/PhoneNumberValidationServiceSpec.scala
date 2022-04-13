@@ -16,8 +16,12 @@
 
 package uk.gov.hmrc.cip.service
 
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.when
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatestplus.mockito.MockitoSugar.mock
+import uk.gov.hmrc.cipphonenumbervalidation.utils.PhoneNumberUtils
 
 class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen {
 
@@ -25,13 +29,18 @@ class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen
   info("I want to ensure phone numbers entered by citizens are valid")
   info("So I can check the validity of the details entered")
 
-  val phoneNumberValidationService = new PhoneNumberValidationService()
+  val mockGoogleLibraryWrapper = mock[GoogleLibraryWrapper]
+  val mockPhoneNumberUtils = mock[PhoneNumberUtils]
+  val phoneNumberValidationService = new PhoneNumberValidationService(mockGoogleLibraryWrapper,  mockPhoneNumberUtils)
+
+  val phoneNumber = "01292123456"
+  when(mockPhoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(anyString())).thenReturn(phoneNumber)
 
   Feature("Validate Phone Number") {
-    Scenario("Phone number is valid") {
+    Scenario("Phone number is valid from Google Library") {
 
-      Given("a phone number is valid")
-      val phoneNumber = "01292123456"
+      Given("a phone number is valid from Google Library")
+      when(mockGoogleLibraryWrapper.isPhoneNumberValidByGoogleLibrary(anyString())).thenReturn(true)
 
       When("the phone number is validated")
       val actual = phoneNumberValidationService.validatePhoneNumber(phoneNumber)
@@ -40,10 +49,10 @@ class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen
       assert(actual == "Valid")
     }
 
-    Scenario("Phone number contains a non-digit character") {
+    Scenario("Phone number is not valid from Google Library") {
 
-      Given("a phone number contains a non-digit character")
-      val phoneNumber = "0a1292123456"
+      Given("a phone number is not valid from Google Library")
+      when(mockGoogleLibraryWrapper.isPhoneNumberValidByGoogleLibrary(anyString())).thenReturn(false)
 
       When("the phone number is validated")
       val actual = phoneNumberValidationService.validatePhoneNumber(phoneNumber)
@@ -52,19 +61,6 @@ class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen
       assert(actual != "Valid")
     }
 
-    // TODO - FIX REGEX ISSUEß
-   /* Scenario("Phone number contains a dash") {
-
-      Given("a phone number is valid and contains a dash")
-      val phoneNumber = "01292-123456"
-
-      When("the phone number is validated")
-      val actual = phoneNumberValidationService.validatePhoneNumber(phoneNumber)
-
-      Then("the phone number should be valid and have the dash removed")
-      assert(actual)
-      // TODO - NEED A MOCK AND ARGUMENT CAPTURE
-      //assert(actual === 01292123456)
-    }*/
   }
+
 }
