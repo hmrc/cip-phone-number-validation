@@ -23,7 +23,6 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.Mockito.{verify, when}
 import play.api.http.{HeaderNames, Status}
-import play.api.i18n.{Langs, MessagesApi}
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.ControllerComponents
 import play.api.test.{FakeRequest, StubControllerComponentsFactory}
@@ -53,7 +52,7 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
         val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequest)
 
         status(actual) shouldBe Status.BAD_REQUEST
-        //body(actual) shouldBe invalidPhoneNumberErrorMsg
+        body(actual) shouldEqual invalidPhoneNumberErrorMsg
         verify(mockPhoneNumberValidationService).validatePhoneNumber(ArgumentMatchers.eq("01292123456"))
       }
     }
@@ -64,7 +63,7 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
         val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequestInvalidBlank)
 
         status(actual) shouldBe Status.BAD_REQUEST
-        //body(actual) shouldBe invalidPhoneNumberErrorMsg
+        body(actual) shouldEqual invalidPhoneNumberErrorMsg
         verifyNoInteractions(mockPhoneNumberValidationService)
       }
     }
@@ -75,7 +74,7 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
         val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequestInvalidMinLength)
 
         status(actual) shouldBe Status.BAD_REQUEST
-        //body(actual) shouldBe invalidPhoneNumberErrorMsg
+        body(actual) shouldEqual invalidPhoneNumberErrorMsg
         verifyNoInteractions(mockPhoneNumberValidationService)
       }
     }
@@ -86,7 +85,7 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
         val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequestInvalidMaxLength)
 
         status(actual) shouldBe Status.BAD_REQUEST
-        //body(actual) shouldBe invalidPhoneNumberErrorMsg
+        body(actual) shouldEqual invalidPhoneNumberErrorMsg
         verifyNoInteractions(mockPhoneNumberValidationService)
       }
     }
@@ -111,17 +110,13 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
     val phoneNumberJsonInvalidMaxLength: JsObject = Json.obj("phoneNumber"-> "012921234567891234567")
     val getValidatePhoneNumberRequestInvalidMaxLength = FakeRequest("POST", "/customer-insight-platform/phone-number/validate-details").withHeaders(HeaderNames.CONTENT_TYPE -> "application/json").withBody[JsValue](phoneNumberJsonInvalidMaxLength)
 
-    val invalidPhoneNumberErrorMsg = "Enter a valid phone number"
+    val invalidPhoneNumberErrorMsg = "error.invalid"
     val mockPhoneNumberValidationService: PhoneNumberValidationService = mock[PhoneNumberValidationService]
     val mockControllerComponents: ControllerComponents = stubControllerComponents()
 
-    val mockLangs = mock[Langs]
-    val mockMessagesApi = mock[MessagesApi]
     val mockAppConfig = mock[AppConfig]
     val validatePhoneNumberController = new ValidatePhoneNumberController(
-      mockControllerComponents
-      , mockLangs,mockMessagesApi,mockAppConfig,mockPhoneNumberValidationService)
-
+      mockControllerComponents, mockAppConfig, mockPhoneNumberValidationService)
   }
 
 }

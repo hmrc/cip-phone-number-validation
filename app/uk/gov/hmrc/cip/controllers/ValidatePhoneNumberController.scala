@@ -17,7 +17,6 @@
 package uk.gov.hmrc.cip.controllers
 
 import org.slf4j.LoggerFactory
-import play.api.i18n.{Langs, MessagesApi}
 import play.api.libs.json.{JsError, JsResult, JsSuccess, JsValue}
 import play.api.mvc.{AbstractController, Action, ControllerComponents}
 import uk.gov.hmrc.cip.config.AppConfig
@@ -30,8 +29,6 @@ import scala.concurrent.Future
 
 @Singleton()
 class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
-                                              langs: Langs,
-                                              messagesApi: MessagesApi,
                                               config: AppConfig,
                                               service: PhoneNumberValidationService)
   extends AbstractController(cc) {
@@ -48,12 +45,12 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
           if (result == VALID) {
             Future.successful(Ok)
           } else {
-            Future.successful(BadRequest("""{"obj":[{"msg":["error.payload.missing"],"args":[]}]}"""))
+            Future.successful(BadRequest(cc.messagesApi("error.invalid")(cc.langs.availables.head)))
           }
         }
         case e: JsError => {
           println("Errors: " + JsError.toJson(e).toString())}
-          Future.successful(BadRequest("""{"obj":[{"msg":["error.payload.missing"],"args":[]}]}"""))
+          Future.successful(BadRequest(cc.messagesApi("error.invalid")(cc.langs.availables.head)))
       }
   }
 
