@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils
+package testutils
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers

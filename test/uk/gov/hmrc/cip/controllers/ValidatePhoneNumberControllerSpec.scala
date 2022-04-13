@@ -30,7 +30,7 @@ import play.api.test.{FakeRequest, StubControllerComponentsFactory}
 import uk.gov.hmrc.cip.config.AppConfig
 import uk.gov.hmrc.cip.service.PhoneNumberValidationService
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.UnitSpec
+import testutils.UnitSpec
 
 class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComponentsFactory {
 

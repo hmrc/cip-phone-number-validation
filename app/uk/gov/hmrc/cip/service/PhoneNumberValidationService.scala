@@ -17,8 +17,8 @@
 package uk.gov.hmrc.cip.service
 
 import org.slf4j.LoggerFactory
-import uk.gov.hmrc.cipphonenumbervalidation.constants.ApplicationConstants.{INVALID, VALID}
-import uk.gov.hmrc.cipphonenumbervalidation.utils.PhoneNumberUtils
+import uk.gov.hmrc.cip.constants.ApplicationConstants.{INVALID, VALID}
+import uk.gov.hmrc.cip.utils.PhoneNumberUtils
 
 import javax.inject.{Inject, Singleton}
 

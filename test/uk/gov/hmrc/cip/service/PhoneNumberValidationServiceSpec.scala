@@ -21,7 +21,7 @@ import org.mockito.Mockito.when
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
-import uk.gov.hmrc.cipphonenumbervalidation.utils.PhoneNumberUtils
+import uk.gov.hmrc.cip.utils.PhoneNumberUtils
 
 class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen {
 

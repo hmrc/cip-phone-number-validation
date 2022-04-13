@@ -21,9 +21,9 @@ import play.api.i18n.{Langs, MessagesApi}
 import play.api.libs.json.{JsError, JsResult, JsSuccess, JsValue}
 import play.api.mvc.{AbstractController, Action, ControllerComponents}
 import uk.gov.hmrc.cip.config.AppConfig
+import uk.gov.hmrc.cip.constants.ApplicationConstants.VALID
 import uk.gov.hmrc.cip.model.PhoneNumberData.phoneNumberReads
 import uk.gov.hmrc.cip.service.PhoneNumberValidationService
-import uk.gov.hmrc.cipphonenumbervalidation.constants.ApplicationConstants.VALID
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
