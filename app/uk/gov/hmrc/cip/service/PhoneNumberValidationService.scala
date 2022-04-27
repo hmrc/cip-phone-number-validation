@@ -17,30 +17,25 @@
 package uk.gov.hmrc.cip.service
 
 import org.slf4j.LoggerFactory
-import uk.gov.hmrc.cip.constants.ApplicationConstants.{INVALID, VALID}
 import uk.gov.hmrc.cip.utils.PhoneNumberApplicationUtils
 
 import javax.inject.{Inject, Singleton}
+import scala.util.{Success, Try}
 
 @Singleton()
-class PhoneNumberValidationService @Inject()(googleLibPhoneNumber: GooglePhoneNumberLibraryService, phoneNumberUtils: PhoneNumberApplicationUtils) {
+class PhoneNumberValidationService @Inject()(googleLibPhoneNumber: GooglePhoneNumberLibraryService) {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
   def validatePhoneNumber(phoneNumber: String): String = {
 
-    logger.debug("Phone number is being validated=" + phoneNumber)
-    val phoneNumberWithNoBannedCharacters = phoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumber)
+    logger.debug(s"Phone number is being validated ${phoneNumber}")
+    val phoneNumberWithNoBannedCharacters = PhoneNumberApplicationUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumber)
 
-    val resultFromGoogleLibrary = googleLibPhoneNumber.isValidPhoneNumber(phoneNumberWithNoBannedCharacters)
-
-    if(resultFromGoogleLibrary) {
-      VALID
-    } else {
-      INVALID
+    Try(googleLibPhoneNumber.isValidPhoneNumber(phoneNumberWithNoBannedCharacters)) match {
+      case Success(true) => "Valid"
+      case _ => "Invalid"
     }
-
   }
-
 }
 

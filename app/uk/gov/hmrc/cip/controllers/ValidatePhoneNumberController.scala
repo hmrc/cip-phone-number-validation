@@ -29,7 +29,6 @@ import scala.concurrent.Future
 
 @Singleton()
 class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
-                                              config: AppConfig,
                                               service: PhoneNumberValidationService)
   extends AbstractController(cc) {
 
@@ -40,7 +39,6 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
       val phoneNumberResult: JsResult[String] = request.body.validate[String](phoneNumberReads)
       phoneNumberResult match {
         case s: JsSuccess[String] => {
-          println("phone number: " + s.get)
           val result = service.validatePhoneNumber(s.get)
           if (result == VALID) {
             Future.successful(Ok)

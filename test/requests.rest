@@ -1,0 +1,6 @@
+POST http://localhost:8082/customer-insight-platform/phone-number/validate-details
+content-type: application/json
+
+{
+  "phoneNumber" : "07843274323"
+}
