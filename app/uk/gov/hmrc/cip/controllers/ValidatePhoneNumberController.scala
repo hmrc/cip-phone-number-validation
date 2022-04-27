@@ -19,7 +19,6 @@ package uk.gov.hmrc.cip.controllers
 import org.slf4j.LoggerFactory
 import play.api.libs.json.{JsError, JsResult, JsSuccess, JsValue}
 import play.api.mvc.{AbstractController, Action, ControllerComponents}
-import uk.gov.hmrc.cip.config.AppConfig
 import uk.gov.hmrc.cip.constants.ApplicationConstants.VALID
 import uk.gov.hmrc.cip.model.PhoneNumberData.phoneNumberReads
 import uk.gov.hmrc.cip.service.PhoneNumberValidationService

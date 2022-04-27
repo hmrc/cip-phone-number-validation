@@ -21,7 +21,6 @@ import org.mockito.Mockito.when
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
-import uk.gov.hmrc.cip.utils.PhoneNumberApplicationUtils
 
 class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen {
 
@@ -30,11 +29,9 @@ class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen
   info("So I can check the validity of the details entered")
 
   val mockGooglePhoneNumberLibraryService = mock[GooglePhoneNumberLibraryService]
-  val mockPhoneNumberUtils = mock[PhoneNumberApplicationUtils]
-  val phoneNumberValidationService = new PhoneNumberValidationService(mockGooglePhoneNumberLibraryService,  mockPhoneNumberUtils)
+  val phoneNumberValidationService = new PhoneNumberValidationService(mockGooglePhoneNumberLibraryService)
 
   val phoneNumber = "01292123456"
-  when(mockPhoneNumberUtils.removeNotAllowedCharsFromPhoneNumber(anyString())).thenReturn(phoneNumber)
 
   Feature("Validate Phone Number") {
     Scenario("Phone number is valid from Google Library") {

@@ -116,7 +116,7 @@ class ValidatePhoneNumberControllerSpec extends UnitSpec with StubControllerComp
 
     val mockAppConfig = mock[AppConfig]
     val validatePhoneNumberController = new ValidatePhoneNumberController(
-      mockControllerComponents, mockAppConfig, mockPhoneNumberValidationService)
+      mockControllerComponents, mockPhoneNumberValidationService)
   }
 
 }
