@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory
 import play.api.libs.json.{JsError, JsResult, JsSuccess, JsValue}
 import play.api.mvc.{AbstractController, Action, ControllerComponents}
 import uk.gov.hmrc.cipphonenumbervalidation.constants.ApplicationConstants.VALID
-import uk.gov.hmrc.cipphonenumbervalidation.model.PhoneNumberData.phoneNumberReads
+import uk.gov.hmrc.cipphonenumbervalidation.dto.PhoneNumberDto.phoneNumberReads
 import uk.gov.hmrc.cipphonenumbervalidation.service.PhoneNumberValidationService
 
 import javax.inject.{Inject, Singleton}
