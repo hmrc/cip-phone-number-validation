@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cip.utils
+package uk.gov.hmrc.cipphonenumbervalidation.constants
 
-object PhoneNumberApplicationUtils {
-  val regexNotAllowedCharacters = "[ ()-]"
-  def removeNotAllowedCharsFromPhoneNumber(input: String) = input.replaceAll(regexNotAllowedCharacters, "")
+object ApplicationConstants {
+  val VALID = "Valid"
+  val INVALID = "Invalid"
 }

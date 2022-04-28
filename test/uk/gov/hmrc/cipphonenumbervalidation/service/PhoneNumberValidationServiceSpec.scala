@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cip.service
+package uk.gov.hmrc.cipphonenumbervalidation.service
 
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.when

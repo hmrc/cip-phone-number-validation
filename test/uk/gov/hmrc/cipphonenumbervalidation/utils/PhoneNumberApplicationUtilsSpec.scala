@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cip.utils
+package uk.gov.hmrc.cipphonenumbervalidation.utils
 
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

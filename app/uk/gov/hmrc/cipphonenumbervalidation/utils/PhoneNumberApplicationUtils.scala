@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cip.model
+package uk.gov.hmrc.cipphonenumbervalidation.utils
 
-import play.api.libs.json.{JsPath}
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads.{maxLength, minLength}
-
-case class PhoneNumberData(phoneNumber: String)
-
-object PhoneNumberData {
-
-  val phoneNumberReads = (JsPath \ "phoneNumber").read[String](minLength[String](6).keepAnd(maxLength[String](20)))
-
-  implicit val phoneNumberWrites: Writes[PhoneNumberData] = Json.writes[PhoneNumberData]
+object PhoneNumberApplicationUtils {
+  val regexNotAllowedCharacters = "[ ()-]"
+  def removeNotAllowedCharsFromPhoneNumber(input: String) = input.replaceAll(regexNotAllowedCharacters, "")
 }

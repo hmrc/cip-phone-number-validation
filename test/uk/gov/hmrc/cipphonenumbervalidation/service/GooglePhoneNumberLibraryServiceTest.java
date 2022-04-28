@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cip.service;
+package uk.gov.hmrc.cipphonenumbervalidation.service;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

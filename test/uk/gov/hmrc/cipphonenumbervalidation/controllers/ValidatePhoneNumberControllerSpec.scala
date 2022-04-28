@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cip.controllers
+package uk.gov.hmrc.cipphonenumbervalidation.controllers
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -26,8 +26,8 @@ import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.ControllerComponents
 import play.api.test.{FakeRequest, StubControllerComponentsFactory}
-import uk.gov.hmrc.cip.config.AppConfig
-import uk.gov.hmrc.cip.service.PhoneNumberValidationService
+import uk.gov.hmrc.cipphonenumbervalidation.config.AppConfig
+import uk.gov.hmrc.cipphonenumbervalidation.service.PhoneNumberValidationService
 import uk.gov.hmrc.http.HeaderCarrier
 import testutils.UnitSpec
 

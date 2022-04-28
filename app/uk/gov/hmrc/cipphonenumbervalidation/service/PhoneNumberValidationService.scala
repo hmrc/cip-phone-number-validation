@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cip.service
+package uk.gov.hmrc.cipphonenumbervalidation.service
 
 import org.slf4j.LoggerFactory
-import uk.gov.hmrc.cip.constants.ApplicationConstants.{INVALID, VALID}
-import uk.gov.hmrc.cip.utils.PhoneNumberApplicationUtils
+import uk.gov.hmrc.cipphonenumbervalidation.constants.ApplicationConstants.{INVALID, VALID}
+import uk.gov.hmrc.cipphonenumbervalidation.utils.PhoneNumberApplicationUtils
 
 import javax.inject.{Inject, Singleton}
 import scala.util.{Success, Try}
