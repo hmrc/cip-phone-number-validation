@@ -29,7 +29,7 @@ class ValidateFormatIntegrationSpec
     "respond with 200 status with valid phone number" in {
       val response =
         wsClient
-          .url(s"$baseUrl/phone-number/validate-details")
+          .url(s"$baseUrl/customer-insight-platform/phone-number/validate-details")
           .post(Json.parse {
             """
               {
@@ -45,7 +45,7 @@ class ValidateFormatIntegrationSpec
     "respond with 400 status with invalid phone number" in {
       val response =
         wsClient
-          .url(s"$baseUrl/phone-number/validate-details")
+          .url(s"$baseUrl/customer-insight-platform/phone-number/validate-details")
           .post(Json.parse {
             """
               {
