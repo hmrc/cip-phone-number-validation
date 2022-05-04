@@ -28,7 +28,7 @@ class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen
   info("I want to ensure phone numbers entered by citizens are valid")
   info("So I can check the validity of the details entered")
 
-  val mockGooglePhoneNumberLibraryService = mock[GooglePhoneNumberLibraryService]
+  val mockGooglePhoneNumberLibraryService = mock[PhoneNumberLibraryService]
   val phoneNumberValidationService = new PhoneNumberValidationService(mockGooglePhoneNumberLibraryService)
 
   val phoneNumber = "01292123456"

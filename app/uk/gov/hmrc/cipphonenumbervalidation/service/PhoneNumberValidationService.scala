@@ -24,7 +24,7 @@ import javax.inject.{Inject, Singleton}
 import scala.util.{Success, Try}
 
 @Singleton()
-class PhoneNumberValidationService @Inject()(googleLibPhoneNumber: GooglePhoneNumberLibraryService) {
+class PhoneNumberValidationService @Inject()(phoneNumberLibraryService: PhoneNumberLibraryService) {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
@@ -33,7 +33,7 @@ class PhoneNumberValidationService @Inject()(googleLibPhoneNumber: GooglePhoneNu
     logger.debug(s"Phone number is being validated ${phoneNumber}")
     val phoneNumberWithNoBannedCharacters = PhoneNumberApplicationUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumber)
 
-    Try(googleLibPhoneNumber.isValidPhoneNumber(phoneNumberWithNoBannedCharacters)) match {
+   phoneNumberLibraryService.isValidPhoneNumber(phoneNumberWithNoBannedCharacters) match {
       case Success(true) => VALID
       case _ => INVALID
     }

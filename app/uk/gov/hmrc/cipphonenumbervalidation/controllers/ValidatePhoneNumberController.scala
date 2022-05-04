@@ -17,39 +17,43 @@
 package uk.gov.hmrc.cipphonenumbervalidation.controllers
 
 import org.slf4j.LoggerFactory
-import play.api.libs.json.{JsError, JsResult, JsSuccess, JsValue}
-import play.api.mvc.{AbstractController, Action, ControllerComponents}
-import uk.gov.hmrc.cipphonenumbervalidation.constants.ApplicationConstants.VALID
-import uk.gov.hmrc.cipphonenumbervalidation.dto.PhoneNumberDto.phoneNumberReads
+import play.api.libs.json._
+import play.api.mvc.{Action, ControllerComponents, Request, Result}
+import uk.gov.hmrc.cipphonenumbervalidation.constants.ApplicationConstants.{INVALID, VALID}
+import uk.gov.hmrc.cipphonenumbervalidation.dto.{ErrorResponse, PhoneNumberDto}
 import uk.gov.hmrc.cipphonenumbervalidation.service.PhoneNumberValidationService
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
 
 @Singleton()
-class ValidatePhoneNumberController @Inject()(cc: ControllerComponents,
-                                              service: PhoneNumberValidationService)
-  extends AbstractController(cc) {
+class ValidatePhoneNumberController @Inject()(cc: ControllerComponents, service: PhoneNumberValidationService)
+  extends BackendController(cc) {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
-  def validatePhoneNumber: Action[JsValue] = Action.async(parse.json) {
-    request =>
-      val phoneNumberResult: JsResult[String] = request.body.validate[String](phoneNumberReads)
-      phoneNumberResult match {
-        case s: JsSuccess[String] => {
-          val result = service.validatePhoneNumber(s.get)
-          if (result == VALID) {
-            Future.successful(Ok)
-          } else {
-            logger.warn("Invalid phone number")
-            Future.successful(BadRequest(cc.messagesApi("error.invalid")(cc.langs.availables.head)))
-          }
-        }
-        case e: JsError => {
-          logger.warn("Errors: " + JsError.toJson(e).toString())}
-          Future.successful(BadRequest(cc.messagesApi("error.invalid")(cc.langs.availables.head)))
-      }
+  def validateFormat: Action[JsValue] = Action.async(parse.json) { implicit request =>
+    withJsonBody[PhoneNumberDto] { futureResultOutcome }
+  }
+
+  private def futureResultOutcome(t: PhoneNumberDto): Future[Result] = {
+    service.validatePhoneNumber(t.phoneNumber) match {
+      case VALID => Future.successful(Ok)
+      case INVALID => Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", "Enter telephone number"))))
+    }
+  }
+
+  override protected def withJsonBody[T](f: T => Future[Result])(implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]) = {
+    Try(request.body.validate[T]) match {
+      case Success(JsSuccess(payload, _)) => f(payload)
+      case Success(JsError(_)) =>
+        Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", "Enter telephone number"))))
+      case Failure(e) =>
+        Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", e.getMessage))))
+    }
   }
 
 }
+
