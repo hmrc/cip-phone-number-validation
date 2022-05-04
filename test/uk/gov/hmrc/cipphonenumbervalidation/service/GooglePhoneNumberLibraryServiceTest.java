@@ -24,11 +24,11 @@ import org.junit.Test;
 
 public class GooglePhoneNumberLibraryServiceTest {
 
-  private GooglePhoneNumberLibraryService classUnderTest;
+  private PhoneNumberLibraryService classUnderTest;
 
   @Before
   public void setUp() {
-    classUnderTest = new GooglePhoneNumberLibraryService();
+    classUnderTest = new PhoneNumberLibraryService();
   }
 
   @Test
@@ -46,6 +46,23 @@ public class GooglePhoneNumberLibraryServiceTest {
   }
 
   @Test
+<<<<<<< HEAD
+=======
+  public void isValidPhoneNumber_isValidUkLandlineNumberWithPlus44_returnsTrue() {
+    String validPhoneNumber = "+441292123456";
+    boolean actual = classUnderTest.isValidPhoneNumber(validPhoneNumber);
+    assertTrue(actual);
+  }
+
+  @Test
+  public void isValidPhoneNumber_isValidUkMobileNumberWithPlus44_returnsTrue() {
+    String validPhoneNumber = "+447812345678";
+    boolean actual = classUnderTest.isValidPhoneNumber(validPhoneNumber);
+    assertTrue(actual);
+  }
+
+  @Test
+>>>>>>> f1d6bc5dc52cb476e4536da8f744ff0c911c2cc8
   public void isValidPhoneNumber_isValidROILandlineNumber_returnsTrue() {
     String validPhoneNumber = "+35312382300";
     boolean actual = classUnderTest.isValidPhoneNumber(validPhoneNumber);
@@ -53,10 +70,62 @@ public class GooglePhoneNumberLibraryServiceTest {
   }
 
   @Test
+<<<<<<< HEAD
+=======
+  public void isValidPhoneNumber_isValidVOIPNumber_returnsTrue() {
+    // real life scam phone number that is in fact a VOIP number
+    // its not really in Alloa - carrier network is "Net-Work Internet Ltd"
+    String validPhoneNumber = "01259 333036";
+    boolean actual = classUnderTest.isValidPhoneNumber(validPhoneNumber);
+    assertTrue(actual);
+  }
+
+  @Test
+  public void isValidPhoneNumber_isValidFreephoneNumber_returnsTrue() {
+    // BT customer services
+    String validPhoneNumber = "0800800150";
+    boolean actual = classUnderTest.isValidPhoneNumber(validPhoneNumber);
+    assertTrue(actual);
+  }
+
+  @Test
+  public void isValidPhoneNumber_isValidPremiumNumber_returnsTrue() {
+    // ITV competition
+    String validPhoneNumber = "09068781119";
+    boolean actual = classUnderTest.isValidPhoneNumber(validPhoneNumber);
+    assertTrue(actual);
+  }
+
+  @Test
+>>>>>>> f1d6bc5dc52cb476e4536da8f744ff0c911c2cc8
   public void isValidPhoneNumber_isInValidNumber_returnsFalse() {
     String invalidPhoneNumber = "35312382300";
     boolean actual = classUnderTest.isValidPhoneNumber(invalidPhoneNumber);
     assertFalse(actual);
   }
 
+<<<<<<< HEAD
+=======
+  @Test
+  public void isValidPhoneNumber_isBlank_returnsFalse() {
+    String invalidPhoneNumber = "";
+    boolean actual = classUnderTest.isValidPhoneNumber(invalidPhoneNumber);
+    assertFalse(actual);
+  }
+
+  @Test
+  public void isValidPhoneNumber_isEmptySpace_returnsFalse() {
+    String invalidPhoneNumber = " ";
+    boolean actual = classUnderTest.isValidPhoneNumber(invalidPhoneNumber);
+    assertFalse(actual);
+  }
+
+  @Test
+  public void isValidPhoneNumber_isNotAllowed_returnsFalse() {
+    String invalidPhoneNumber = "999";
+    boolean actual = classUnderTest.isValidPhoneNumber(invalidPhoneNumber);
+    assertFalse(actual);
+  }
+
+>>>>>>> f1d6bc5dc52cb476e4536da8f744ff0c911c2cc8
 }

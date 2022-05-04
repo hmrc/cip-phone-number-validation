@@ -1,4 +1,8 @@
 # Default messages
 
 # --- Errors
+<<<<<<< HEAD
 error.invalid=Enter a valid phone number
+=======
+error.invalid=Enter a valid telephone number
+>>>>>>> f1d6bc5dc52cb476e4536da8f744ff0c911c2cc8
