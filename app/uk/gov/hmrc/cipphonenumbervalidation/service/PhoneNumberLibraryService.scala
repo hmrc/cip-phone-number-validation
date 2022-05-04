@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.cipphonenumbervalidation.service
 
-import com.google.i18n.phonenumbers.{NumberParseException, PhoneNumberUtil}
+import com.google.i18n.phonenumbers.{PhoneNumberUtil}
 
 import scala.util.Try
 

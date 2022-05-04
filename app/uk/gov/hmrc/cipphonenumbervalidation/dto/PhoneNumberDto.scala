@@ -24,7 +24,7 @@ case class PhoneNumberDto(phoneNumber: String)
 
 object PhoneNumberDto {
 
-  implicit val phoneNumberReads: Reads[PhoneNumberDto] = (JsPath \ "phoneNumber").read[String](minLength[String](6).keepAnd(maxLength[String](20)))
+  implicit val phoneNumberReads: Reads[PhoneNumberDto] = Json.reads[PhoneNumberDto]//(JsPath \ "phoneNumber").read[String](minLength[String](6).keepAnd(maxLength[String](20)))
 
   implicit val phoneNumberWrites: Writes[PhoneNumberDto] = Json.writes[PhoneNumberDto]
 }

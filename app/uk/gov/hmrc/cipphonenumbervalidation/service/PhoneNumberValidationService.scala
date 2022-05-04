@@ -21,7 +21,7 @@ import uk.gov.hmrc.cipphonenumbervalidation.constants.ApplicationConstants.{INVA
 import uk.gov.hmrc.cipphonenumbervalidation.utils.PhoneNumberApplicationUtils
 
 import javax.inject.{Inject, Singleton}
-import scala.util.{Success, Try}
+import scala.util.{Success}
 
 @Singleton()
 class PhoneNumberValidationService @Inject()(phoneNumberLibraryService: PhoneNumberLibraryService) {
@@ -31,7 +31,7 @@ class PhoneNumberValidationService @Inject()(phoneNumberLibraryService: PhoneNum
   def validatePhoneNumber(phoneNumber: String): String = {
 
     logger.debug(s"Phone number is being validated ${phoneNumber}")
-    val phoneNumberWithNoBannedCharacters = PhoneNumberApplicationUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumber)
+    val phoneNumberWithNoBannedCharacters = Some(PhoneNumberApplicationUtils.removeNotAllowedCharsFromPhoneNumber(phoneNumber))
 
    phoneNumberLibraryService.isValidPhoneNumber(phoneNumberWithNoBannedCharacters) match {
       case Success(true) => VALID

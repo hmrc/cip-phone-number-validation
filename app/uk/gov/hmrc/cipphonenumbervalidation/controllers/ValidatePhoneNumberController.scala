@@ -41,7 +41,7 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents, service:
   private def futureResultOutcome(t: PhoneNumberDto): Future[Result] = {
     service.validatePhoneNumber(t.phoneNumber) match {
       case VALID => Future.successful(Ok)
-      case INVALID => Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", "Enter telephone number"))))
+      case INVALID => Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", "Enter a valid telephone number"))))
     }
   }
 
@@ -49,7 +49,7 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents, service:
     Try(request.body.validate[T]) match {
       case Success(JsSuccess(payload, _)) => f(payload)
       case Success(JsError(_)) =>
-        Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", "Enter telephone number"))))
+        Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", "Enter a valid telephone number"))))
       case Failure(e) =>
         Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", e.getMessage))))
     }

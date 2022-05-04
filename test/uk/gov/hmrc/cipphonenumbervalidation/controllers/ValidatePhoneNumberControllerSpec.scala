@@ -28,7 +28,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
+import play.api.test.Helpers.{contentAsJson, contentAsString, defaultAwaitTimeout, status}
 import play.mvc.Http.{HttpVerbs, MimeTypes}
 import uk.gov.hmrc.cipphonenumbervalidation.constants.ApplicationConstants.{INVALID, VALID}
 import uk.gov.hmrc.cipphonenumbervalidation.service.PhoneNumberValidationService
@@ -56,7 +56,7 @@ class ValidatePhoneNumberControllerSpec extends AnyWordSpec with Matchers with M
     "return a 200 (Ok) http response when phone number is valid" in {
       when(mockPhoneNumberValidationService.validatePhoneNumber(anyString())) thenReturn VALID
 
-      val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequest)
+      val actual = validatePhoneNumberController.validateFormat()(getValidatePhoneNumberRequest)
 
       status(actual) shouldBe Status.OK
       val bodyText: String = contentAsString(actual)
@@ -68,44 +68,44 @@ class ValidatePhoneNumberControllerSpec extends AnyWordSpec with Matchers with M
       "when phone number passes simple validation and does not pass complex validation" in {
       when(mockPhoneNumberValidationService.validatePhoneNumber(anyString())) thenReturn INVALID
 
-      val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequest)
+      val actual = validatePhoneNumberController.validateFormat()(getValidatePhoneNumberRequest)
 
       status(actual) shouldBe Status.BAD_REQUEST
-      val bodyText: String = contentAsString(actual)
-      bodyText shouldBe expectedErrorMessage
+      val bodyJson: JsValue = contentAsJson(actual)
+      (bodyJson \ "message").as[String] shouldBe expectedErrorMessage
       verify(mockPhoneNumberValidationService).validatePhoneNumber(ArgumentMatchers.eq("01292123456"))
     }
 
     "return a 400 (Bad Request) http response when phone number is blank" in {
       val getValidatePhoneNumberRequestInvalidBlank = buildRequest("")
 
-      val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequestInvalidBlank)
+      val actual = validatePhoneNumberController.validateFormat()(getValidatePhoneNumberRequestInvalidBlank)
 
       status(actual) shouldBe Status.BAD_REQUEST
-      val bodyText: String = contentAsString(actual)
-      bodyText shouldBe expectedErrorMessage
+      val bodyJson: JsValue = contentAsJson(actual)
+      (bodyJson \ "message").as[String] shouldBe expectedErrorMessage
       verifyNoInteractions(mockPhoneNumberValidationService)
     }
 
     "return a 400 (Bad Request) http response when phone number is less than minimum length of 6" in {
       val getValidatePhoneNumberRequestInvalidMinLength = buildRequest("01292")
 
-      val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequestInvalidMinLength)
+      val actual = validatePhoneNumberController.validateFormat()(getValidatePhoneNumberRequestInvalidMinLength)
 
       status(actual) shouldBe Status.BAD_REQUEST
-      val bodyText: String = contentAsString(actual)
-      bodyText shouldBe expectedErrorMessage
+      val bodyJson: JsValue = contentAsJson(actual)
+      (bodyJson \ "message").as[String] shouldBe expectedErrorMessage
       verifyNoInteractions(mockPhoneNumberValidationService)
     }
 
     "return a 400 (Bad Request) http response when phone number is greater than maximum length of 20" in {
       val getValidatePhoneNumberRequestInvalidMaxLength = buildRequest("012921234567891234567")
 
-      val actual = validatePhoneNumberController.validatePhoneNumber()(getValidatePhoneNumberRequestInvalidMaxLength)
+      val actual = validatePhoneNumberController.validateFormat()(getValidatePhoneNumberRequestInvalidMaxLength)
 
       status(actual) shouldBe Status.BAD_REQUEST
-      val bodyText: String = contentAsString(actual)
-      bodyText shouldBe expectedErrorMessage
+      val bodyJson: JsValue = contentAsJson(actual)
+      (bodyJson \ "message").as[String] shouldBe expectedErrorMessage
       verifyNoInteractions(mockPhoneNumberValidationService)
     }
 

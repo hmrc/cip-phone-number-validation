@@ -16,43 +16,48 @@
 
 package uk.gov.hmrc.cipphonenumbervalidation.service
 
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.when
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatestplus.mockito.MockitoSugar.mock
+import org.scalatestplus.mockito.MockitoSugar
 
-class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen {
+import scala.util.Try
+
+class PhoneNumberValidationServiceSpec extends AnyFeatureSpec with GivenWhenThen with MockitoSugar {
 
   info("As a HMRC service")
   info("I want to ensure phone numbers entered by citizens are valid")
   info("So I can check the validity of the details entered")
 
-  val mockGooglePhoneNumberLibraryService = mock[PhoneNumberLibraryService]
-  val phoneNumberValidationService = new PhoneNumberValidationService(mockGooglePhoneNumberLibraryService)
+  val mockPhoneNumberLibraryService = mock[PhoneNumberLibraryService]
+  val phoneNumberValidationService = new PhoneNumberValidationService(mockPhoneNumberLibraryService)
 
   val phoneNumber = "01292123456"
 
-  Feature("Validate Phone Number") {
-    Scenario("Phone number is valid from Google Library") {
+  def valid(): Option[String] = Some("01292123456")
+  def invalid(): Option[String] = Some("0126")
 
-      Given("a phone number is valid from Google Library")
-      when(mockGooglePhoneNumberLibraryService.isValidPhoneNumber(anyString())).thenReturn(true)
+  Feature("Validate Phone Number") {
+
+    Scenario("Phone number is valid from Library") {
+
+      Given("a phone number is valid from Library")
+      when(mockPhoneNumberLibraryService.isValidPhoneNumber(valid())).thenReturn(Try{true})
 
       When("the phone number is validated")
-      val actual = phoneNumberValidationService.validatePhoneNumber(phoneNumber)
+      val actual = phoneNumberValidationService.validatePhoneNumber("01292123456")
 
-      Then("the phone number should be valid")
+      Then("the phone number should be invalid")
       assert(actual == "Valid")
     }
 
-    Scenario("Phone number is not valid from Google Library") {
+    Scenario("Phone number is not valid from Library") {
 
-      Given("a phone number is not valid from Google Library")
-      when(mockGooglePhoneNumberLibraryService.isValidPhoneNumber(anyString())).thenReturn(false)
+      Given("a phone number is not valid from Library")
+      when(mockPhoneNumberLibraryService.isValidPhoneNumber(invalid())).thenReturn(Try{false})
 
       When("the phone number is validated")
-      val actual = phoneNumberValidationService.validatePhoneNumber(phoneNumber)
+      val actual = phoneNumberValidationService.validatePhoneNumber("0126")
 
       Then("the phone number should be invalid")
       assert(actual != "Valid")
