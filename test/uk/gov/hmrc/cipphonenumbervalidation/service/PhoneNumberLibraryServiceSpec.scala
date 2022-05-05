@@ -20,8 +20,6 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 
-import scala.util.{Failure, Success}
-
 class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
 
   info("As a HMRC service")
@@ -39,7 +37,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("01292123456"))
       Then("the phone number should be valid")
-      assert(actual == {Success(true)})
+      assert(actual.isSuccess)
     }
 
     Scenario("Phone number is valid UK Mobile") {
@@ -47,7 +45,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("07812345678"))
       Then("the phone number should be valid")
-      assert(actual == {Success(true)})
+      assert(actual.isSuccess)
     }
 
     Scenario("Phone number is valid UK Landline WithPlus44") {
@@ -55,7 +53,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("+441292123456"))
       Then("the phone number should be valid")
-      assert(actual == {Success(true)})
+      assert(actual.isSuccess)
     }
 
     Scenario("Phone number is valid UK Mobile WithPlus44") {
@@ -63,7 +61,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("+447812345678"))
       Then("the phone number should be valid")
-      assert(actual == {Success(true)})
+      assert(actual.isSuccess)
     }
 
     Scenario("Phone number is valid ROI Landline With Country code") {
@@ -71,7 +69,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("+35312382300"))
       Then("the phone number should be valid")
-      assert(actual == {Success(true)})
+      assert(actual.isSuccess)
     }
 
     Scenario("Phone number is a valid VOIP number") {
@@ -81,7 +79,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("01259 333036"))
       Then("the phone number should be valid")
-      assert(actual == {Success(true)})
+      assert(actual.isSuccess)
     }
 
     Scenario("Phone number is a valid Freephone number") {
@@ -90,7 +88,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("0800800150"))
       Then("the phone number should be valid")
-      assert(actual == {Success(true)})
+      assert(actual.isSuccess)
     }
 
     Scenario("Phone number is a valid Premium rate number") {
@@ -99,7 +97,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("09068781119"))
       Then("the phone number should be valid")
-      assert(actual == {Success(true)})
+      assert(actual.isSuccess)
     }
 
     Scenario("Phone number is an invalid number") {
@@ -107,7 +105,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("35312382300"))
       Then("the phone number should not be valid")
-      assert(actual == {Failure})
+      assert(actual.isFailure)
     }
 
     Scenario("Phone number is blank") {
@@ -115,7 +113,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some(""))
       Then("the phone number should not be valid")
-      assert(actual == {false})
+      assert(actual.isFailure)
     }
 
     Scenario("Phone number is empty") {
@@ -123,7 +121,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some(" "))
       Then("the phone number should not be valid")
-      assert(actual == {false})
+      assert(actual.isFailure)
     }
 
     Scenario("Phone number is not allowed") {
@@ -131,7 +129,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       When("the phone number is validated")
       val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("999"))
       Then("the phone number should not be valid")
-      assert(actual == {false})
+      assert(actual.isFailure)
     }
 
   }
