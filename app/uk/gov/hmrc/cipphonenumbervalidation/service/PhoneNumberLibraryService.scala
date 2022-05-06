@@ -16,14 +16,15 @@
 
 package uk.gov.hmrc.cipphonenumbervalidation.service
 
-import com.google.i18n.phonenumbers.{PhoneNumberUtil}
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 
 import scala.util.Try
 
-class PhoneNumberLibraryService(phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance) {
+class PhoneNumberLibraryService() {
 
   def isValidPhoneNumber(phoneNumber: Option[String]) =
   Try {
+    val phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
     val phoneNumberProtoBuffer = isUkPhoneNumber(phoneNumber) match {
       case true => phoneNumberUtil.parse(createUKNumber(phoneNumber.get), "UK")
       case false =>

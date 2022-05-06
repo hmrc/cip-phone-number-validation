@@ -38,7 +38,7 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents, service:
   def validateFormat: Action[JsValue] = Action.async(parse.json) { implicit request =>
     withJsonBody[PhoneNumberDto] { futureResultOutcome }
   }
-
+// TODO - BH - ADD MESSAGE API
   private def futureResultOutcome(t: PhoneNumberDto): Future[Result] = {
     service.validatePhoneNumber(t.phoneNumber) match {
       case VALID => Future.successful(Ok)
@@ -47,6 +47,7 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents, service:
   }
 
   override protected def withJsonBody[T](f: T => Future[Result])(implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]) = {
+    logger.debug("validating phone number")
     Try(request.body.validate[T]) match {
       case Success(JsSuccess(payload, _)) => f(payload)
       case Success(JsError(_)) =>

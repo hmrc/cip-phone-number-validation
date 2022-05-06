@@ -26,8 +26,7 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
   info("I want to ensure phone numbers entered by citizens are valid")
   info("So I can check the validity of the details entered")
 
-  val phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance
-  val phoneNumberLibraryService = new PhoneNumberLibraryService(phoneNumberUtil)
+  val phoneNumberLibraryService = new PhoneNumberLibraryService()
 
   val phoneNumber = "01292123456"
 
