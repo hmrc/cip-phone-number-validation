@@ -1,11 +1,18 @@
-POST http://localhost:8082/customer-insight-platform/phone-number/validate-format
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
 content-type: application/json
 
 {
   "phoneNumber" : "07843274323"
 }
 ###
-POST http://localhost:8082/customer-insight-platform/phone-number/validate-format
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "+447843274323"
+}
+###
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
 content-type: application/json
 
 {
