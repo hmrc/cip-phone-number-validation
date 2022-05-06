@@ -40,6 +40,7 @@ class PhoneNumberLibraryService(phoneNumberUtil: PhoneNumberUtil = PhoneNumberUt
 
   private def isUkPhoneNumber(input: Option[String]) = input match {
     case None => false
+    case Some(p) if p.charAt(0) != '0' => false
     case Some(p) if p.charAt(0) == '0' => true
   }
 }
