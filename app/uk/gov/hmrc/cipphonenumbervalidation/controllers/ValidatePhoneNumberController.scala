@@ -38,11 +38,11 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents, service:
   def validateFormat: Action[JsValue] = Action.async(parse.json) { implicit request =>
     withJsonBody[PhoneNumberDto] { futureResultOutcome }
   }
-// TODO - BH - ADD MESSAGE API
+
   private def futureResultOutcome(t: PhoneNumberDto): Future[Result] = {
     service.validatePhoneNumber(t.phoneNumber) match {
       case VALID => Future.successful(Ok)
-      case INVALID => Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", "Enter a valid telephone number"))))
+      case INVALID => Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", cc.messagesApi("error.invalid")(cc.langs.availables.head)))))
     }
   }
 
@@ -51,7 +51,7 @@ class ValidatePhoneNumberController @Inject()(cc: ControllerComponents, service:
     Try(request.body.validate[T]) match {
       case Success(JsSuccess(payload, _)) => f(payload)
       case Success(JsError(_)) =>
-        Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", "Enter a valid telephone number"))))
+        Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", cc.messagesApi("error.invalid")(cc.langs.availables.head)))))
       case Failure(e) =>
         Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", e.getMessage))))
     }
