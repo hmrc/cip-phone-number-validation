@@ -17,24 +17,29 @@
 package uk.gov.hmrc.cipphonenumbervalidation.service
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 
 import scala.util.Try
 
 class PhoneNumberLibraryService() {
 
-  def isValidPhoneNumber(phoneNumber: Option[String]) =
+  def isValidPhoneNumber(phoneNumber: Option[String]): Try[Boolean] =
     Try {
       val phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
-      val phoneNumberProtoBuffer = isUkPhoneNumber(phoneNumber) match {
-        case true => phoneNumberUtil.parse(createUKNumber(phoneNumber.get), "UK")
+      isUkPhoneNumber(phoneNumber) match {
+        case true =>
+          val ukPhoneNumberStr: String = createUKNumberWithPlus44(phoneNumber.get)
+          val ukNumberProto = phoneNumberUtil.parse(ukPhoneNumberStr, "UK")
+          val ukPhoneNumberType: PhoneNumberType = phoneNumberUtil.getNumberType(ukNumberProto)
+          phoneNumberUtil.isPossibleNumberForType(ukNumberProto, ukPhoneNumberType)
         case false =>
-          val numberProto = phoneNumberUtil.parse(phoneNumber.get, "")
-          phoneNumberUtil.parse(phoneNumber.get, Integer.toString(numberProto.getCountryCode))
+          val numberProto: PhoneNumber = phoneNumberUtil.parse(phoneNumber.get, "")
+          phoneNumberUtil.isValidNumber(numberProto)
       }
-      phoneNumberUtil.isValidNumber(phoneNumberProtoBuffer)
     }
 
-  private def createUKNumber(input: String) = {
+  private def createUKNumberWithPlus44(input: String) = {
     val firstZeroRemoved = input.substring(1)
     "+44" + firstZeroRemoved
   }

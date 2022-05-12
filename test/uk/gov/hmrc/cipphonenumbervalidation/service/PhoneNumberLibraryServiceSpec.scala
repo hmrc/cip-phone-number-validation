@@ -98,6 +98,33 @@ class PhoneNumberLibraryServiceSpec extends AnyFeatureSpec with GivenWhenThen {
       assert(actual.isSuccess)
     }
 
+    Scenario("Phone number is a valid UK NSN number of 11 digits") {
+      // Nationwide credit card services
+      Given("a phone number is a UK National Significant Number of 11 digits")
+      When("the phone number is validated")
+      val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("08000 55 66 22"))
+      Then("the phone number should be valid")
+      assert(actual.isSuccess)
+    }
+
+    Scenario("Phone number is a valid UK NSN number of 10 digits") {
+      // NHS Inform
+      Given("a phone number is a UK National Significant Number of 10 digits")
+      When("the phone number is validated")
+      val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("0800 22 44 88"))
+      Then("the phone number should be valid")
+      assert(actual.isSuccess)
+    }
+
+    Scenario("Phone number is a valid UK NSN number of 7 digits") {
+      // Child line
+      Given("a phone number is a UK National Significant Number of 7 digits")
+      When("the phone number is validated")
+      val actual = phoneNumberLibraryService.isValidPhoneNumber(Some("0800 11 11"))
+      Then("the phone number should be valid")
+      assert(actual.isSuccess)
+    }
+
     Scenario("Phone number is an invalid number") {
       Given("a phone number is an invalid number")
       When("the phone number is validated")

@@ -45,7 +45,7 @@ class ValidateFormatIntegrationSpec
     "respond with 200 status with valid phone number" in {
       val response =
         wsClient
-          .url(s"$baseUrl/customer-insight-platform/phone-number/validate-details")
+          .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
           .post(Json.parse {
             """
               {
@@ -58,10 +58,26 @@ class ValidateFormatIntegrationSpec
       response.status shouldBe 200
     }
 
+    "respond with 200 status with valid UK NSN phone number" in {
+      val response =
+        wsClient
+          .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
+          .post(Json.parse {
+            """
+              {
+                "phoneNumber": "0800 22 44 88"
+              }
+              """.stripMargin
+          })
+          .futureValue
+
+      response.status shouldBe 200
+    }
+
     "respond with 400 status with invalid phone number" in {
       val response =
         wsClient
-          .url(s"$baseUrl/customer-insight-platform/phone-number/validate-details")
+          .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
           .post(Json.parse {
             """
               {

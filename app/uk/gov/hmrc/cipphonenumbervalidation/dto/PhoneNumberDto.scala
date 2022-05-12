@@ -17,6 +17,7 @@
 package uk.gov.hmrc.cipphonenumbervalidation.dto
 
 import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads.{maxLength, minLength}
 import play.api.libs.json._
 
 case class PhoneNumberDto(phoneNumber: String)
@@ -24,7 +25,11 @@ case class PhoneNumberDto(phoneNumber: String)
 object PhoneNumberDto {
 
   implicit val phoneNumberReads: Reads[PhoneNumberDto] =
-    (JsPath \ "phoneNumber").read[String](Reads.minLength[String](6).keepAnd(Reads.maxLength[String](20))).map(PhoneNumberDto.apply(_))
+    (JsPath \ "phoneNumber").read[String](minLength[String](7).keepAnd(maxLength[String](20))).map(PhoneNumberDto.apply(_))
 
   implicit val phoneNumberWrites: Writes[PhoneNumberDto] = Json.writes[PhoneNumberDto]
+
+  implicit val phoneNumberFormat: Format[PhoneNumberDto] =
+    Format(phoneNumberReads, phoneNumberWrites)
+
 }
