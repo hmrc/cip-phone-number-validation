@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cipphonenumbervalidation.utils
+package uk.gov.hmrc.cipphonenumbervalidation.models
 
-object PhoneNumberApplicationUtils {
-  val regexNotAllowedCharacters = "[ ()-]"
-  def removeNotAllowedCharsFromPhoneNumber(input: String) = input.replaceAll(regexNotAllowedCharacters, "")
+import play.api.libs.json.{Json, OWrites}
+
+case class ErrorResponse(code: String, message: String)
+
+object ErrorResponse {
+  implicit val writes: OWrites[ErrorResponse] = Json.writes[ErrorResponse]
 }
