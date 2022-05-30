@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cipphonenumbervalidation.dto
+package uk.gov.hmrc.cipphonenumbervalidation.models
 
-import play.api.libs.json.{Json, OWrites}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads.{maxLength, minLength}
+import play.api.libs.json._
 
-case class ErrorResponse(code: String, message: String)
+case class PhoneNumber(phoneNumber: String)
 
-object ErrorResponse {
-  implicit val writes: OWrites[ErrorResponse] = Json.writes[ErrorResponse]
+object PhoneNumber {
+
+  implicit val phoneNumberReads: Reads[PhoneNumber] =
+    (JsPath \ "phoneNumber").read[String](minLength[String](7).keepAnd(maxLength[String](20))).map(PhoneNumber.apply(_))
 }

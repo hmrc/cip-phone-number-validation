@@ -1,20 +1,119 @@
+### UK correct number
 POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
 content-type: application/json
 
 {
   "phoneNumber" : "07843274323"
 }
-###
+
+### UK correct number
 POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
 content-type: application/json
 
 {
   "phoneNumber" : "+447843274323"
 }
-###
+
+### Invalid number
 POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
 content-type: application/json
 
 {
-  "phoneNumber" : "078"
+  "phoneNumber" : "99999999"
+}
+
+### Valid 8 digit number
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "08001111"
+}
+
+### Invalid 8 digit number
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "0845 46 41"
+}
+
+### 01339 21
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "01339 21"
+}
+
+### 6 digit number
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "170709"
+}
+
+### 078e5996457
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "078e5996457"
+}
+
+### 0785996457e
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "0785996457e"
+}
+
+### +44 (0) 7446147592
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "+44 (0) 7446147592"
+}
+
+### +44 [0] 7446147592 - wrong
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "+44 [0] 7446147592"
+}
+
+### +44-0-7446147592
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "+44-0-7446147592"
+}
+
+### +39-0-7446147592
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "+39-0-7446147592"
+}
+
+### +1-844-GSA-4111 - +1-844-472-4111
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "+1-844-GSA-4111"
+}
+
+### 001-844-472-4111
+POST http://localhost:9000/customer-insight-platform/phone-number/validate-format
+content-type: application/json
+
+{
+  "phoneNumber" : "001-844-472-4111"
 }
