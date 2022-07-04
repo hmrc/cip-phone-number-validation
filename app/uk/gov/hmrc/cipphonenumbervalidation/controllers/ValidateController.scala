@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.cipphonenumbervalidation.controllers
 
-import org.slf4j.LoggerFactory
 import play.api.libs.json._
 import play.api.mvc.{Action, ControllerComponents, Request, Result}
 import uk.gov.hmrc.cipphonenumbervalidation.models.{ErrorResponse, PhoneNumber}
@@ -25,20 +24,16 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
-import scala.util.{Failure, Success, Try}
+import scala.util.{Success, Try}
 
 @Singleton()
 class ValidateController @Inject()(cc: ControllerComponents, service: ValidationService)
   extends BackendController(cc) {
 
-  private val logger = LoggerFactory.getLogger(getClass)
-
   def validateFormat: Action[JsValue] = Action.async(parse.json) { implicit request =>
-    withJsonBody[PhoneNumber] { futureResultOutcome }
-  }
-
-  private def futureResultOutcome(t: PhoneNumber): Future[Result] = {
-    service.validate(t.phoneNumber)
+    withJsonBody[PhoneNumber] {
+      phoneNumber => service.validate(phoneNumber.phoneNumber)
+    }
   }
 
   override protected def withJsonBody[T](f: T => Future[Result])(implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]) = {
@@ -48,5 +43,4 @@ class ValidateController @Inject()(cc: ControllerComponents, service: Validation
         Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", cc.messagesApi("error.invalid")(cc.langs.availables.head)))))
     }
   }
-
 }

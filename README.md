@@ -4,6 +4,11 @@
 
 Backend server for validating a given phone number
 
+The default port for cip-phone-number-frontend is 6080
+The default port for cip-phone-number is port 6081
+The default port for cip-phone-number-validation is port 6082
+The default port for cip-phone-number-verification is port 6083
+
 ### Testing
 
 #### Unit tests
@@ -23,22 +28,29 @@ Run the services against the current versions in dev, stop the CIP_PHONE_NUMBER_
     sm --start CIP_PHONE_NUMBER_VALIDATION_ALL -r
     sm --stop CIP_PHONE_NUMBER_VALIDATION
     cd cip-phone-number-validation
-    sbt 'run 6082'
+    sbt run 6082
 
 For reference here are the details for running each of the services individually
 
     cd cip-phone-number-frontend
-    sbt 'run 6080'
+    sbt run
  
     cd cip-phone-number
-    sbt 'run 6081'
+    sbt run
 
     cd cip-phone-number-validation
-    sbt 'run 6082'
+    sbt run
 
     cd cip-phone-number-verification
+    sbt run
 
-    sbt 'run 6083'
+### Curl microservice (for curl microservice build jobs)
+
+#### Validate
+
+    -XPOST -H "Content-type: application/json" -d '{
+	    "phoneNumber": "<phone-number>"
+    }' 'https://cip-phone-number-validation.protected.mdtp/customer-insight-platform/phone-number/validate-format'
 
 ### License
 
