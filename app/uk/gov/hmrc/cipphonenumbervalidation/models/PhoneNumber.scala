@@ -23,7 +23,10 @@ import play.api.libs.json._
 case class PhoneNumber(phoneNumber: String)
 
 object PhoneNumber {
+  val MIN_LENGTH = 7
+  val MAX_LENGTH = 20
 
   implicit val phoneNumberReads: Reads[PhoneNumber] =
-    (JsPath \ "phoneNumber").read[String](minLength[String](7).keepAnd(maxLength[String](20))).map(PhoneNumber.apply(_))
+    (JsPath \ "phoneNumber").read[String](minLength[String](MIN_LENGTH)
+      .keepAnd(maxLength[String](MAX_LENGTH))).map(PhoneNumber.apply)
 }

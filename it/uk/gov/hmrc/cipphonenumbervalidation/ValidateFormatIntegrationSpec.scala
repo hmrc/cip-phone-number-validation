@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.cipphonenumbervalidation
 
-import org.scalatest.Ignore
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -44,35 +43,41 @@ class ValidateFormatIntegrationSpec
 
   "Validate" should {
     "UK National Significant Numbers - respond with 200 status with valid phone number for valid UK numbers" in new SetUp {
-        ukNationalSignificantNumbers map { x =>
-          val response =
-            wsClient
-              .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
-              .post(Json.parse {s"""{"phoneNumber": "$x"}""".stripMargin})
-              .futureValue
+      ukNationalSignificantNumbers map { x =>
+        val response =
+          wsClient
+            .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
+            .post(Json.parse {
+              s"""{"phoneNumber": "$x"}""".stripMargin
+            })
+            .futureValue
 
-          response.status shouldBe 200
-        }
+        response.status shouldBe 200
       }
+    }
 
-      "Uk Mobiles - respond with 200 status with valid UK NSN phone number" in new SetUp {
-        UkMobiles map { x =>
-          val response =
-            wsClient
-              .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
-              .post(Json.parse {s"""{"phoneNumber": "$x"}""".stripMargin})
-              .futureValue
+    "Uk Mobiles - respond with 200 status with valid UK NSN phone number" in new SetUp {
+      UkMobiles map { x =>
+        val response =
+          wsClient
+            .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
+            .post(Json.parse {
+              s"""{"phoneNumber": "$x"}""".stripMargin
+            })
+            .futureValue
 
-          response.status shouldBe 200
-        }
+        response.status shouldBe 200
       }
+    }
 
     "UK Landline Numbers - respond with 200 status with valid UK NSN phone number" in new SetUp {
       ukLandlineNumbers map { x =>
         val response =
           wsClient
             .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
-            .post(Json.parse {s"""{"phoneNumber": "$x"}""".stripMargin})
+            .post(Json.parse {
+              s"""{"phoneNumber": "$x"}""".stripMargin
+            })
             .futureValue
 
         response.status shouldBe 200
@@ -84,7 +89,9 @@ class ValidateFormatIntegrationSpec
         val response =
           wsClient
             .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
-            .post(Json.parse {s"""{"phoneNumber": "$x"}""".stripMargin})
+            .post(Json.parse {
+              s"""{"phoneNumber": "$x"}""".stripMargin
+            })
             .futureValue
 
         response.status shouldBe 200
@@ -96,7 +103,9 @@ class ValidateFormatIntegrationSpec
         val response =
           wsClient
             .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
-            .post(Json.parse {s"""{"phoneNumber": "$x"}""".stripMargin})
+            .post(Json.parse {
+              s"""{"phoneNumber": "$x"}""".stripMargin
+            })
             .futureValue
 
         response.status shouldBe 400
