@@ -50,7 +50,7 @@ For reference here are the details for running each of the services individually
 
     -XPOST -H "Content-type: application/json" -d '{
 	    "phoneNumber": "<phone-number>"
-    }' 'https://cip-phone-number-validation.protected.mdtp/customer-insight-platform/phone-number/validate-format'
+    }' 'https://cip-phone-number-validation.protected.mdtp/customer-insight-platform/phone-number/validate'
 
 ### License
 

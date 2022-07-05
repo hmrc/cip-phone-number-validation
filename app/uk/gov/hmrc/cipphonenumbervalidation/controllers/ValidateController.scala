@@ -30,13 +30,13 @@ import scala.util.{Success, Try}
 class ValidateController @Inject()(cc: ControllerComponents, service: ValidationService)
   extends BackendController(cc) {
 
-  def validateFormat: Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def validate: Action[JsValue] = Action.async(parse.json) { implicit request =>
     withJsonBody[PhoneNumber] {
       phoneNumber => service.validate(phoneNumber.phoneNumber)
     }
   }
 
-  override protected def withJsonBody[T](f: T => Future[Result])(implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]) = {
+  override protected def withJsonBody[T](f: T => Future[Result])(implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]): Future[Result] = {
     Try(request.body.validate[T]) match {
       case Success(JsSuccess(payload, _)) => f(payload)
       case Success(JsError(_)) =>
