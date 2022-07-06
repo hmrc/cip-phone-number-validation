@@ -20,12 +20,10 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 
-class ValidateFormatIntegrationSpec
+class ValidateIntegrationSpec
   extends AnyWordSpec
     with Matchers
     with ScalaFutures
@@ -35,18 +33,12 @@ class ValidateFormatIntegrationSpec
   private val wsClient = app.injector.instanceOf[WSClient]
   private val baseUrl = s"http://localhost:$port"
 
-  override def fakeApplication(): Application =
-    GuiceApplicationBuilder()
-      .configure("metrics.enabled" -> false)
-      .configure("auditing.enabled" -> false)
-      .build()
-
   "Validate" should {
     "UK National Significant Numbers - respond with 200 status with valid phone number for valid UK numbers" in new SetUp {
       ukNationalSignificantNumbers map { x =>
         val response =
           wsClient
-            .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
+            .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
             .post(Json.parse {
               s"""{"phoneNumber": "$x"}""".stripMargin
             })
@@ -60,7 +52,7 @@ class ValidateFormatIntegrationSpec
       UkMobiles map { x =>
         val response =
           wsClient
-            .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
+            .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
             .post(Json.parse {
               s"""{"phoneNumber": "$x"}""".stripMargin
             })
@@ -74,7 +66,7 @@ class ValidateFormatIntegrationSpec
       ukLandlineNumbers map { x =>
         val response =
           wsClient
-            .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
+            .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
             .post(Json.parse {
               s"""{"phoneNumber": "$x"}""".stripMargin
             })
@@ -88,7 +80,7 @@ class ValidateFormatIntegrationSpec
       internationalNumbers map { x =>
         val response =
           wsClient
-            .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
+            .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
             .post(Json.parse {
               s"""{"phoneNumber": "$x"}""".stripMargin
             })
@@ -102,7 +94,7 @@ class ValidateFormatIntegrationSpec
       invalidTestData map { x =>
         val response =
           wsClient
-            .url(s"$baseUrl/customer-insight-platform/phone-number/validate-format")
+            .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
             .post(Json.parse {
               s"""{"phoneNumber": "$x"}""".stripMargin
             })

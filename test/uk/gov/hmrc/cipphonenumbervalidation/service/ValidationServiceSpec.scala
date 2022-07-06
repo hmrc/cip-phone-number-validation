@@ -16,30 +16,36 @@
 
 package uk.gov.hmrc.cipphonenumbervalidation.service
 
-import org.scalatest.BeforeAndAfter
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.mvc.{ControllerComponents, Result}
-import play.api.mvc.Results.{BadRequest, Ok}
-
-import scala.concurrent.Future
+import play.api.http.Status.{BAD_REQUEST, OK}
+import play.api.i18n.MessagesApi
+import play.api.test.Helpers
+import play.api.test.Helpers.{defaultAwaitTimeout, status}
 
 class ValidationServiceSpec extends AnyWordSpec with Matchers {
 
   "Validate" should {
     "return success if telephone number is valid" in new SetUp {
-      validationService.validate("07890349087").value shouldBe Future.successful(Ok).value
+      val result = validationService.validate("07890349087")
+      status(result) shouldBe OK
     }
 
     "return failure if telephone number is empty" in new SetUp {
-      validationService.validate("").value.get.get.header.status shouldBe Future.successful(BadRequest).value.get.get.header.status
+      val result = validationService.validate("")
+      status(result) shouldBe BAD_REQUEST
+    }
+
+    "return failure if telephone number contains letters" in new SetUp {
+      val result = validationService.validate("invalid")
+      status(result) shouldBe BAD_REQUEST
     }
   }
 
   trait SetUp {
-    val cc = mock[ControllerComponents]
-    val validationService = new ValidationService(cc)
+    implicit val messagesApi: MessagesApi = Helpers.stubMessagesApi()
+    implicit val langs = Helpers.stubLangs()
+    val validationService = new ValidationService(PhoneNumberUtil.getInstance())(messagesApi, langs)
   }
-
 }

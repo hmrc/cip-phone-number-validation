@@ -33,7 +33,7 @@ class ValidateControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppP
   "POST /" should {
     "return 200 with valid telephone number address" in new SetUp {
       validData map {x =>
-        val result = controller.validateFormat()(
+        val result = controller.validate()(
           fakeRequest.withBody(Json.toJson(PhoneNumber(s"$x"))))
         status(result) shouldBe OK
       }
@@ -41,7 +41,7 @@ class ValidateControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppP
 
     "return 400 with empty telephone number address" in new SetUp {
       invalidData map {x =>
-        val result = controller.validateFormat()(
+        val result = controller.validate()(
           fakeRequest.withBody(Json.toJson(PhoneNumber(s"$x"))))
         status(result) shouldBe BAD_REQUEST
         (contentAsJson(result) \ "message").as[String] shouldBe "Enter a valid telephone number"
@@ -54,4 +54,3 @@ class ValidateControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppP
     val invalidData = List("+44[0]7890349087", "020 8e20 9807", "11011","")
   }
 }
-
