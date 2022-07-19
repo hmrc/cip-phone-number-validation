@@ -27,13 +27,28 @@ import play.api.test.Helpers.{defaultAwaitTimeout, status}
 class ValidationServiceSpec extends AnyWordSpec with Matchers {
 
   "Validate" should {
-    "return success if telephone number is valid" in new SetUp {
+    "return success if telephone number is a valid UK mobile number" in new SetUp {
       val result = validationService.validate("07890349087")
+      status(result) shouldBe OK
+    }
+
+    "return success if telephone number is a valid UK landline number" in new SetUp {
+      val result = validationService.validate("01292123456")
+      status(result) shouldBe OK
+    }
+
+    "return success if telephone number is a valid non-UK number" in new SetUp {
+      val result = validationService.validate("+35312382300")
       status(result) shouldBe OK
     }
 
     "return failure if telephone number is empty" in new SetUp {
       val result = validationService.validate("")
+      status(result) shouldBe BAD_REQUEST
+    }
+
+    "return failure if telephone number contains no leading zero" in new SetUp {
+      val result = validationService.validate("1292123456")
       status(result) shouldBe BAD_REQUEST
     }
 
