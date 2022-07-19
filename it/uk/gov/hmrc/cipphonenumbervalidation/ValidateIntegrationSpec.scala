@@ -111,6 +111,6 @@ class ValidateIntegrationSpec
     val UkMobiles = List("07890056734", "0044(0)7890056734", "+44-7890056734")
     val ukLandlineNumbers = List("01372 272357", "020 8221 7300", "+4420 8221 7300", "+44 (0)20 8221 7300")
     val internationalNumbers = List("+1-844-472-4111", "001-844-472-4111", "+1 876-953-2650")
-    val invalidTestData = List("999", "asjdh", "112112", "078e5996457", "0785996457e")
+    val invalidTestData = List("999", "asjdh", "112112", "078e5996457", "0785996457e", "7890056734")
   }
 }
