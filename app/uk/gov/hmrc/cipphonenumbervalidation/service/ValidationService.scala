@@ -35,9 +35,12 @@ class ValidationService @Inject()(phoneNumberUtil: PhoneNumberUtil)(implicit mes
     Try {
       if (phoneNumber.exists(_.isLetter) || StringUtils.containsAny(phoneNumber, "[]")) {
         false
-      }
-      else {
-        phoneNumberUtil.isValidNumber(phoneNumberUtil.parse(phoneNumber, defaultRegion))
+      } else {
+        if (isFirstCharValid(phoneNumber.charAt(0))) {
+          phoneNumberUtil.isValidNumber(phoneNumberUtil.parse(phoneNumber, defaultRegion))
+        } else {
+          false
+        }
       }
     } match {
       case Success(true) => Future.successful(Ok)
@@ -46,4 +49,13 @@ class ValidationService @Inject()(phoneNumberUtil: PhoneNumberUtil)(implicit mes
       case Failure(e) => Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", e.getMessage))))
     }
   }
+
+  private def isFirstCharValid(firstChar: Char): Boolean = {
+    firstChar match {
+      case '+' => true
+      case '0' => true
+      case _ => false
+    }
+  }
+
 }
