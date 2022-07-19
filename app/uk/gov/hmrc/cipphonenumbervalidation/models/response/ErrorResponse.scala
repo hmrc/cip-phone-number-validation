@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.cipphonenumbervalidation.models
+package uk.gov.hmrc.cipphonenumbervalidation.models.response
 
 import play.api.libs.json.{Json, OWrites}
 
