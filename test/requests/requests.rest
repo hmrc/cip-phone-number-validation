@@ -30,7 +30,7 @@ content-type: application/json
   "phoneNumber" : "08001111"
 }
 
-### Invalid 8 digit number
+### Shared_cost 8 digit number
 POST http://localhost:6082/customer-insight-platform/phone-number/validate
 content-type: application/json
 

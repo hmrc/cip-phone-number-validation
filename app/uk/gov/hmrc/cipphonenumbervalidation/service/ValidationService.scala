@@ -17,12 +17,15 @@
 package uk.gov.hmrc.cipphonenumbervalidation.service
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType
+import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 import org.apache.commons.lang3.StringUtils
 import play.api.i18n.{Langs, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.mvc.Results.{BadRequest, Ok}
-import uk.gov.hmrc.cipphonenumbervalidation.models.ErrorResponse
+import uk.gov.hmrc.cipphonenumbervalidation.models.response.{ErrorResponse, PhoneNumberResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
@@ -31,31 +34,26 @@ import scala.util.{Failure, Success, Try}
 @Singleton()
 class ValidationService @Inject()(phoneNumberUtil: PhoneNumberUtil)(implicit messagesApi: MessagesApi, langs: Langs) {
 
-  def validate(phoneNumber: String, defaultRegion: String = "GB"): Future[Result] = {
+  val formatInE164 = (x: PhoneNumber) => phoneNumberUtil.format(x, PhoneNumberFormat.E164)
+
+  def validate(phoneNumber: String)(implicit defaultRegion: String = "GB"): Future[Result] = {
     Try {
-      if (phoneNumber.exists(_.isLetter) || StringUtils.containsAny(phoneNumber, "[]")) {
-        false
-      } else {
-        if (isFirstCharValid(phoneNumber.charAt(0))) {
-          phoneNumberUtil.isValidNumber(phoneNumberUtil.parse(phoneNumber, defaultRegion))
-        } else {
-          false
-        }
+      val mandatoryFirstChars = "+0"
+      phoneNumber match {
+        case _ if phoneNumber.isEmpty || existsLetter(phoneNumber) || containsChars(phoneNumber) || !mandatoryFirstChars.contains(phoneNumber.charAt(0)) => false
+        case _ if isValidPhoneNumber(phoneNumber) => PhoneNumberResponse(formatInE164(parsePhoneNumber(phoneNumber)), getPhoneNumberType(phoneNumber).name.toLowerCase.capitalize)
       }
     } match {
-      case Success(true) => Future.successful(Ok)
+      case Success(phoneNumberResponse: PhoneNumberResponse) => Future.successful(Ok(Json.toJson(phoneNumberResponse)))
       case Success(false) =>
         Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", messagesApi("error.invalid")(langs.availables.head)))))
-      case Failure(e) => Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", e.getMessage))))
+      case Failure(e) => Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", messagesApi("error.invalid")(langs.availables.head)))))
     }
   }
 
-  private def isFirstCharValid(firstChar: Char): Boolean = {
-    firstChar match {
-      case '+' => true
-      case '0' => true
-      case _ => false
-    }
-  }
-
+  private def isValidPhoneNumber(phoneNumber: String)(implicit defaultRegion: String) = phoneNumberUtil.isValidNumber(parsePhoneNumber(phoneNumber))
+  private def getPhoneNumberType(phoneNumber: String)(implicit defaultRegion: String) = phoneNumberUtil.getNumberType(phoneNumberUtil.parse(phoneNumber, defaultRegion))
+  private def existsLetter(phoneNumber: String) = phoneNumber.exists(_.isLetter)
+  private def containsChars(phoneNumber: String) = StringUtils.containsAny(phoneNumber, "[]")
+  private def parsePhoneNumber(phoneNumber: String)(implicit defaultRegion: String): PhoneNumber =  phoneNumberUtil.parse(phoneNumber, defaultRegion)
 }
