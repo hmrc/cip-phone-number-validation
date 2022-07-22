@@ -8,6 +8,8 @@ The default port for cip-phone-number-frontend is 6080
 The default port for cip-phone-number is port 6081
 The default port for cip-phone-number-validation is port 6082
 The default port for cip-phone-number-verification is port 6083
+The default port for cip-phone-number-stubs is port 6099
+The default port for internal-auth is port 8470
 
 ### Testing
 
@@ -48,7 +50,7 @@ For reference here are the details for running each of the services individually
 
 #### Validate
 
-    -XPOST -H "Content-type: application/json" -d '{
+    -XPOST -H "Content-type: application/json" -H "Authorization: <auth-token>" -d '{
 	    "phoneNumber": "<phone-number>"
     }' 'https://cip-phone-number-validation.protected.mdtp/customer-insight-platform/phone-number/validate'
 

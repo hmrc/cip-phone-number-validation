@@ -21,96 +21,46 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
-import play.api.libs.ws.WSClient
+import play.api.libs.ws.ahc.AhcCurlRequestLogger
+import uk.gov.hmrc.cipphonenumbervalidation.utils.DataSteps
 
 class ValidateIntegrationSpec
   extends AnyWordSpec
     with Matchers
     with ScalaFutures
     with IntegrationPatience
-    with GuiceOneServerPerSuite {
+    with GuiceOneServerPerSuite
+    with DataSteps {
 
-  private val wsClient = app.injector.instanceOf[WSClient]
-  private val baseUrl = s"http://localhost:$port"
+  "/validate" should {
+    "respond with 200 status with valid phone number" in {
+      val response =
+        wsClient
+          .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
+          .withHttpHeaders("Authorization" -> s"$getToken")
+          .withRequestFilter(AhcCurlRequestLogger())
+          .post(Json.parse {
+            s"""{"phoneNumber": "07123456789"}""".stripMargin
+          })
+          .futureValue
 
-  "Validate" should {
-    "UK National Significant Numbers - respond with 200 status with valid phone number for valid UK numbers" in new SetUp {
-      ukNationalSignificantNumbers map { x =>
-        val response =
-          wsClient
-            .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
-            .post(Json.parse {
-              s"""{"phoneNumber": "$x"}""".stripMargin
-            })
-            .futureValue
-
-        response.status shouldBe 200
-      }
+      response.status shouldBe 200
     }
 
-    "Uk Mobiles - respond with 200 status with valid UK NSN phone number" in new SetUp {
-      UkMobiles map { x =>
-        val response =
-          wsClient
-            .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
-            .post(Json.parse {
-              s"""{"phoneNumber": "$x"}""".stripMargin
-            })
-            .futureValue
+    "respond with 400 status with invalid phone number" in {
+      val response =
+        wsClient
+          .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
+          .withHttpHeaders("Authorization" -> s"$getToken")
+          .withRequestFilter(AhcCurlRequestLogger())
+          .post(Json.parse {
+            s"""{"phoneNumber": ""}""".stripMargin
+          })
+          .futureValue
 
-        response.status shouldBe 200
-      }
+      response.status shouldBe 400
+      (response.json \ "code").as[String] shouldBe "VALIDATION_ERROR"
+      (response.json \ "message").as[String] shouldBe "Enter a valid telephone number"
     }
-
-    "UK Landline Numbers - respond with 200 status with valid UK NSN phone number" in new SetUp {
-      ukLandlineNumbers map { x =>
-        val response =
-          wsClient
-            .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
-            .post(Json.parse {
-              s"""{"phoneNumber": "$x"}""".stripMargin
-            })
-            .futureValue
-
-        response.status shouldBe 200
-      }
-    }
-
-    "International numbers - respond with 200 status with valid UK NSN phone number" in new SetUp {
-      internationalNumbers map { x =>
-        val response =
-          wsClient
-            .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
-            .post(Json.parse {
-              s"""{"phoneNumber": "$x"}""".stripMargin
-            })
-            .futureValue
-
-        response.status shouldBe 200
-      }
-    }
-
-    "Invalid Numbers - respond with 400 status with invalid phone number" in new SetUp {
-      invalidTestData map { x =>
-        val response =
-          wsClient
-            .url(s"$baseUrl/customer-insight-platform/phone-number/validate")
-            .post(Json.parse {
-              s"""{"phoneNumber": "$x"}""".stripMargin
-            })
-            .futureValue
-
-        response.status shouldBe 400
-        (response.json \ "message").as[String] shouldBe "Enter a valid telephone number"
-      }
-    }
-  }
-
-  trait SetUp {
-    val ukNationalSignificantNumbers = List("0800 11 11", "0845 46 41", "0800 300 3234")
-    val UkMobiles = List("07890056734", "0044(0)7890056734", "+44-7890056734")
-    val ukLandlineNumbers = List("01372 272357", "020 8221 7300", "+4420 8221 7300", "+44 (0)20 8221 7300")
-    val internationalNumbers = List("+1-844-472-4111", "001-844-472-4111", "+1 876-953-2650")
-    val invalidTestData = List("999", "asjdh", "112112", "078e5996457", "0785996457e", "7890056734")
   }
 }
