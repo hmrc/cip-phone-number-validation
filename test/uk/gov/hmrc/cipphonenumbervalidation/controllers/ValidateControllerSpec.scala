@@ -16,60 +16,58 @@
 
 package uk.gov.hmrc.cipphonenumbervalidation.controllers
 
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.mockito.IdiomaticMockito
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import org.scalatest.prop.TableDrivenPropertyChecks._
-import play.api.http.ContentTypes
 import play.api.http.Status.{BAD_REQUEST, OK}
 import play.api.libs.json.{Json, OWrites}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsJson, contentType, defaultAwaitTimeout, status}
+import play.api.mvc.Results.Ok
+import play.api.test.Helpers.{contentAsJson, defaultAwaitTimeout, status}
+import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.cipphonenumbervalidation.models.request.PhoneNumber
+import uk.gov.hmrc.cipphonenumbervalidation.service.ValidateService
 
-class ValidateControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
-  private val fakeRequest = FakeRequest()
-  private lazy val controller = app.injector.instanceOf[ValidateController]
-  private implicit val writes: OWrites[PhoneNumber] = Json.writes[PhoneNumber]
+import scala.concurrent.Future
+import scala.util.Random
 
-  "POST /" should {
-    "return 200 with valid telephone number address" in new SetUp {
-      forAll(validData) {(enteredPhoneNumber, expectedNormalisedPhoneNumber) =>
-        val result = controller.validate()(
-          fakeRequest.withBody(Json.toJson(PhoneNumber(enteredPhoneNumber))))
-        status(result) shouldBe OK
-        contentType(result) mustBe Some(ContentTypes.JSON)
-        (contentAsJson(result) \ "phoneNumber").as[String] shouldBe expectedNormalisedPhoneNumber
-        (contentAsJson(result) \ "phoneNumberType").as[String] shouldBe "Fixed_line"
-      }
+class ValidateControllerSpec extends AnyWordSpec
+  with Matchers
+  with IdiomaticMockito {
+
+  "validate" should {
+    "delegate to validate service" in new SetUp {
+      val phoneNumber = "1234567"
+      mockValidateService.validate(phoneNumber)
+        .returns(Future.successful(Ok))
+      val result = controller.validate()(
+        fakeRequest.withBody(Json.toJson(PhoneNumber(phoneNumber))))
+      status(result) shouldBe OK
+      mockValidateService.validate(phoneNumber) was called
     }
 
-    "return 400 with empty telephone number address" in new SetUp {
-      forAll(invalidData) {(enteredPhoneNumber, expectedErrorMessage) =>
-        val result = controller.validate()(
-          fakeRequest.withBody(Json.toJson(PhoneNumber(enteredPhoneNumber))))
-        status(result) shouldBe BAD_REQUEST
-        contentType(result) mustBe Some(ContentTypes.JSON)
-        (contentAsJson(result) \ "message").as[String] shouldBe expectedErrorMessage
-      }
+    "return 400 with blank telephone number" in new SetUp {
+      val phoneNumber = ""
+      val result = controller.validate()(
+        fakeRequest.withBody(Json.toJson(PhoneNumber(phoneNumber))))
+      status(result) shouldBe BAD_REQUEST
+      (contentAsJson(result) \ "code").as[String] shouldBe "VALIDATION_ERROR"
+      (contentAsJson(result) \ "message").as[String] shouldBe "Enter a valid telephone number"
+    }
+
+    "return 400 with telephone number too long" in new SetUp {
+      val phoneNumber = Random.alphanumeric.take(21).mkString
+      val result = controller.validate()(
+        fakeRequest.withBody(Json.toJson(PhoneNumber(phoneNumber))))
+      status(result) shouldBe BAD_REQUEST
+      (contentAsJson(result) \ "code").as[String] shouldBe "VALIDATION_ERROR"
+      (contentAsJson(result) \ "message").as[String] shouldBe "Enter a valid telephone number"
     }
   }
 
   trait SetUp {
-    val validData = Table(
-      ("enteredPhoneNumber", "expectedNormalisedPhoneNumber"),
-      ("020 8820 9807", "+442088209807"),
-      ("+4420 8820 9807", "+442088209807")
-    )
-
-    val invalidData = Table(
-      ("enteredPhoneNumber", "expectedErrorMessage"),
-      ("+44[0]7890349087", "Enter a valid telephone number"),
-      ("020 8e20 9807", "Enter a valid telephone number"),
-      ("11011", "Enter a valid telephone number"),
-      ("7890349087", "Enter a valid telephone number")
-    )
-
+    protected val fakeRequest = FakeRequest()
+    protected val mockValidateService = mock[ValidateService]
+    protected val controller = new ValidateController(Helpers.stubControllerComponents(), mockValidateService)
+    protected implicit val writes: OWrites[PhoneNumber] = Json.writes[PhoneNumber]
   }
 }
