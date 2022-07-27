@@ -17,12 +17,14 @@
 package uk.gov.hmrc.cipphonenumbervalidation.service
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 import org.apache.commons.lang3.StringUtils
 import play.api.i18n.{Langs, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.mvc.Results.{BadRequest, Ok}
-import uk.gov.hmrc.cipphonenumbervalidation.models.ErrorResponse
+import uk.gov.hmrc.cipphonenumbervalidation.models.response.{ErrorResponse, PhoneNumberResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
@@ -31,22 +33,23 @@ import scala.util.{Failure, Success, Try}
 @Singleton()
 class ValidationService @Inject()(phoneNumberUtil: PhoneNumberUtil)(implicit messagesApi: MessagesApi, langs: Langs) {
 
+  val formatInE164 = (x: PhoneNumber) => phoneNumberUtil.format(x, PhoneNumberFormat.E164)
+
   def validate(phoneNumber: String, defaultRegion: String = "GB"): Future[Result] = {
     Try {
-      if (phoneNumber.exists(_.isLetter) || StringUtils.containsAny(phoneNumber, "[]")) {
+      if (phoneNumber.isEmpty || phoneNumber.exists(_.isLetter) || StringUtils.containsAny(phoneNumber, "[]")) {
         false
       } else {
         if (isFirstCharValid(phoneNumber.charAt(0))) {
-          phoneNumberUtil.isValidNumber(phoneNumberUtil.parse(phoneNumber, defaultRegion))
+          phoneNumberUtil.isValidNumber(parsePhoneNumber(phoneNumber, defaultRegion))
         } else {
           false
         }
       }
     } match {
-      case Success(true) => Future.successful(Ok)
-      case Success(false) =>
-        Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", messagesApi("error.invalid")(langs.availables.head)))))
-      case Failure(e) => Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", e.getMessage))))
+      case Success(true) => Future.successful(Ok(Json.toJson(PhoneNumberResponse(formatInE164(parsePhoneNumber(phoneNumber, defaultRegion))))))
+      case Success(false) => Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", messagesApi("error.invalid")(langs.availables.head)))))
+      case Failure(e) => Future.failed(e)
     }
   }
 
@@ -56,6 +59,10 @@ class ValidationService @Inject()(phoneNumberUtil: PhoneNumberUtil)(implicit mes
       case '0' => true
       case _ => false
     }
+  }
+
+  private def parsePhoneNumber(phoneNumber: String, defaultRegion: String): PhoneNumber = {
+    phoneNumberUtil.parse(phoneNumber, defaultRegion)
   }
 
 }
