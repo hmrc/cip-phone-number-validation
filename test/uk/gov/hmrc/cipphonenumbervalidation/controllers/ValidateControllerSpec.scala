@@ -41,6 +41,7 @@ class ValidateControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppP
         status(result) shouldBe OK
         contentType(result) mustBe Some(ContentTypes.JSON)
         (contentAsJson(result) \ "phoneNumber").as[String] shouldBe expectedNormalisedPhoneNumber
+        (contentAsJson(result) \ "phoneNumberType").as[String] shouldBe "Fixed_line"
       }
     }
 

@@ -77,6 +77,11 @@ class ValidationServiceSpec extends AnyWordSpec with Matchers {
       (contentAsJson(result) \ "message").asOpt[String] mustBe Some("Enter a valid telephone number")
     }
 
+    "return failure if telephone number has no leading zero" in new SetUp {
+      val result = validationService.validate("7890349087")
+      status(result) shouldBe BAD_REQUEST
+    }
+
     "return failure if telephone number contains no leading zero" in new SetUp {
       val result = validationService.validate("1292123456")
       status(result) shouldBe BAD_REQUEST

@@ -18,7 +18,7 @@ package uk.gov.hmrc.cipphonenumbervalidation.models.response
 
 import play.api.libs.json.{Json, OWrites}
 
-case class PhoneNumberResponse(phoneNumber: String)
+case class PhoneNumberResponse(phoneNumber: String, phoneNumberType: String)
 
 object PhoneNumberResponse {
   implicit val writes: OWrites[PhoneNumberResponse] = Json.writes[PhoneNumberResponse]
