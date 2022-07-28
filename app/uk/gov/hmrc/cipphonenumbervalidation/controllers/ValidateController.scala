@@ -16,20 +16,20 @@
 
 package uk.gov.hmrc.cipphonenumbervalidation.controllers
 
+import play.api.Logging
 import play.api.libs.json._
 import play.api.mvc.{Action, ControllerComponents, Request, Result}
 import uk.gov.hmrc.cipphonenumbervalidation.models.request.PhoneNumber
 import uk.gov.hmrc.cipphonenumbervalidation.models.response.ErrorResponse
-import uk.gov.hmrc.cipphonenumbervalidation.service.ValidationService
+import uk.gov.hmrc.cipphonenumbervalidation.service.ValidateService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
-import scala.util.{Success, Try}
 
 @Singleton()
-class ValidateController @Inject()(cc: ControllerComponents, service: ValidationService)
-  extends BackendController(cc) {
+class ValidateController @Inject()(cc: ControllerComponents, service: ValidateService)
+  extends BackendController(cc) with Logging {
 
   def validate: Action[JsValue] = Action.async(parse.json) { implicit request =>
     withJsonBody[PhoneNumber] {
@@ -38,10 +38,11 @@ class ValidateController @Inject()(cc: ControllerComponents, service: Validation
   }
 
   override protected def withJsonBody[T](f: T => Future[Result])(implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]): Future[Result] = {
-    Try(request.body.validate[T]) match {
-      case Success(JsSuccess(payload, _)) => f(payload)
-      case Success(JsError(_)) =>
-        Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", cc.messagesApi("error.invalid")(cc.langs.availables.head)))))
+    request.body.validate[T] match {
+      case JsSuccess(payload, _) => f(payload)
+      case JsError(_) =>
+        logger.warn("Failed to validate request")
+        Future.successful(BadRequest(Json.toJson(ErrorResponse("VALIDATION_ERROR", "Enter a valid telephone number"))))
     }
   }
 }
